@@ -71,10 +71,10 @@ TEMPLATES = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME', 'sparkli'),
-        'USER': os.getenv('DB_USER', 'root'),
-        'PASSWORD': os.getenv('DB_PASSWORD', ''),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'NAME': os.getenv('DB_NAME', 'sparkli_db'),
+        'USER': os.getenv('DB_USER', 'sparkli_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'secure_password'),
+        'HOST': os.getenv('DB_HOST', 'sparkli-db.render.com'),
         'PORT': os.getenv('DB_PORT', '3306'),
     }
 }
