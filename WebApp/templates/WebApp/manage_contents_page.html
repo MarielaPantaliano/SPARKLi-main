@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Contents Page</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+        @font-face {
+            font-family: 'Blueberry';
+            src: url("{% static 'fonts/Blueberry .ttf' %}") format('truetype');
+        }
+        .hidden {
+            display: none;
+        }
+        .edit-indicator {
+            display: fixed;
+            position: absolute;
+            font-size: 1.4em;
+            top: 50%;
+            left: 47%;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <img class="bg" src="{% static 'images/dashboard_bg.png' %}">
+
+
+    <button onclick="goBack()" class="manage-back-btn">
+        <img src="{% static 'images/back-btn.png' %}" alt="Back" height="50" width="50">
+    </button>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+
+    <h2 class="manage-content-txt">Select Content to Edit</h2>
+
+
+    <div class="manage-contents-side-bar">
+        <h5 class="pretest-title">Pretest</h5>
+        <button class="manage-contents-title" onclick="handleClick('pretest', 'passages')">Pretest Passages</button>
+        <button class="manage-contents-title" onclick="handleClick('pretest', 'questions')">Pretest Questions</button>
+        <button class="manage-contents-title" onclick="handleClick('pretest', 'answers')">Pretest Answers</button>
+        <h5 class="posttest-title">Posttest</h5>
+        <button class="manage-contents-title2" onclick="handleClick('posttest', 'passages')">Posttest Passages</button>
+        <button class="manage-contents-title2" onclick="handleClick('posttest', 'questions')">Posttest Questions</button>
+        <button class="manage-contents-title2" onclick="handleClick('posttest', 'answers')">Posttest Answers</button>
+    </div>
+
+
+    <div id="content" class="hidden">
+        <h3 id="edit-indicator" class="edit-indicator hidden"></h3>
+        <div id="grade-buttons" class="grade-buttons hidden">
+            <button onclick="showEditArea(2)">Grade 2</button>
+            <button onclick="showEditArea(3)">Grade 3</button>
+            <button onclick="showEditArea(4)">Grade 4</button>
+        </div>
+        <div id="edit-area" class="edit-area hidden"></div>
+    </div>
+
+
+    <script>
+        function handleClick(testType, contentType) {
+            document.getElementById('content').classList.remove('hidden');
+            document.getElementById('grade-buttons').classList.remove('hidden');
+            document.getElementById('edit-area').classList.add('hidden');
+
+
+            let indicatorText = '';
+            if (testType === 'pretest') {
+                if (contentType === 'passages') {
+                    indicatorText = 'Edit Pretest Passages';
+                } else if (contentType === 'questions') {
+                    indicatorText = 'Edit Pretest Questions';
+                } else if (contentType === 'answers') {
+                    indicatorText = 'Edit Pretest Answers';
+                }
+            } else if (testType === 'posttest') {
+                if (contentType === 'passages') {
+                    indicatorText = 'Edit Posttest Passages';
+                } else if (contentType === 'questions') {
+                    indicatorText = 'Edit Posttest Questions';
+                } else if (contentType === 'answers') {
+                    indicatorText = 'Edit Posttest Answers';
+                }
+            }
+
+
+            const editIndicator = document.getElementById('edit-indicator');
+            editIndicator.textContent = indicatorText;
+            editIndicator.classList.remove('hidden');
+
+
+            window.currentTestType = testType;
+            window.currentContentType = contentType;
+        }
+
+
+        function showEditArea(grade) {
+            let baseUrl = '';
+            let actualGrade = grade;
+            if (window.currentTestType === 'pretest') {
+                baseUrl = '/manage_pre';
+            } else if (window.currentTestType === 'posttest') {
+                baseUrl = '/manage_post';
+                if (grade === 2) {
+                    actualGrade = 22;
+                } else if (grade === 3) {
+                    actualGrade = 33;
+                } else if (grade === 4) {
+                    actualGrade = 44;
+                }
+            }
+
+
+            if (window.currentContentType === 'answers') {
+                window.location.href = `${baseUrl}ans_view_content/${actualGrade}`;
+            } else if (window.currentContentType === 'passages') {
+                window.location.href = `${baseUrl}pass_view_content/${actualGrade}`;
+            } else if (window.currentContentType === 'questions') {
+                window.location.href = `${baseUrl}que_view_content/${actualGrade}`;
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+

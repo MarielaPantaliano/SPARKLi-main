@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Bloom Game</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/game_style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+        @font-face {
+            font-family: 'More Sugar Regular';
+            src: url("{% static 'fonts/more-sugar.regular.ttf' %}") format('truetype');
+        }
+        @font-face {
+            font-family: 'Blueberry';
+            src: url("{% static 'fonts/Blueberry.ttf' %}") format('truetype');
+        }
+    </style>
+</head>
+<body>
+    <div class="game-bg">
+        <img src="{% static 'images/game_images/index_game_bg.png' %}" height="99%" width="100%" style="position: fixed; top: 0; left: 0;">
+        <div class="box"></div>
+        <div class="txt-container">
+            <h2 class="head-title">MIND BLOOM GAMES</h2>
+        </div>
+        <div class="loader">
+            <div class="loader__circle"></div>
+            <div class="loader__circle"></div>
+            <div class="loader__circle"></div>
+            <div class="loader__circle"></div>
+        </div>
+        <div class="loading" id="loading">Game Loading...</div>
+
+        <audio id="game-bg-music" loop>
+            <source src="{% static 'sounds/game-bg-music.mp3' %}" type="audio/mpeg">
+        </audio>
+
+        <button id="toggle-music" class="toggle-music">
+            <img src="{% static 'images/speaker.png' %}" height="40" width="40">
+        </button>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const audio = document.getElementById("game-bg-music");
+                const toggleButton = document.getElementById("toggle-music");
+
+                const musicState = localStorage.getItem("musicState");
+                if (musicState === "on") {
+                    audio.play().catch(error => {
+                        console.log('Autoplay failed:', error);
+                    });
+                }
+
+                function toggleMusic() {
+                    if (audio.paused) {
+                        audio.play();
+                        localStorage.setItem("musicState", "on"); 
+                    } else {
+                        audio.pause();
+                        localStorage.setItem("musicState", "off"); 
+                    }
+                }
+
+                toggleButton.addEventListener("click", toggleMusic);
+            });
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const title = document.getElementById('loading');
+                let loadPercentage = 0;
+
+                const updateTitle = () => {
+                    loadPercentage += 1;
+                    title.textContent = `Game Loading... ${loadPercentage}%`;
+
+                    if (loadPercentage < 100) {
+                        setTimeout(updateTitle, 100);
+                    } else {
+                        title.textContent = 'Game Ready!';
+                        redirectToNextPage();
+                    }
+                };
+
+                const redirectToNextPage = () => {
+                    const audio = document.getElementById("game-bg-music");
+                    sessionStorage.setItem("currentTime", audio.currentTime);
+                    window.location.href = 'game_claveria.html';
+                };
+
+                updateTitle();
+            });
+        </script>
+    </div>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Claveria!</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/game_style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <script src="{% static 'js/music-player.js' %}"></script>
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+
+        @font-face {
+            font-family: 'More Sugar Regular';
+            src: url("{% static 'fonts/more-sugar.regular.ttf' %}") format('truetype');
+        }
+
+        @font-face {
+            font-family: 'More Sugar Thin';
+            src: url("{% static 'fonts/more-sugar.thin.ttf' %}") format('truetype');
+        }
+    </style>
+</head>
+<body>
+    <div class="game-bg">
+        <div class="container1"></div>
+        <div class="container2"></div>
+        <img class="game-logo" src="{% static 'images/game_images/game-logo.png' %}">
+        <img class="readnmatch" src="{% static 'images/game_images/readnmatch.png' %}">
+        <h2 class="c8-name">TYPES OF TRANSPORTATION</h2>
+        <img class="transportation" src="{% static 'images/game_images/c8.png' %}">
+        <img class="airplane" src="{% static 'images/game_images/airplane.png' %}">
+        <img class="c8-q-mark" src="{% static 'images/game_images/q-mark.png' %}">
+
+        <audio id="game-bg-music" loop>
+            <source src="{% static 'sounds/game-bg-music.mp3' %}" type="audio/mpeg">
+        </audio>
+        
+        <button id="toggle-music" class="toggle-music">
+            <img src="{% static 'images/speaker.png' %}" height="40" width="40">
+        </button>        
+
+        <button id="choice-1" class="choice-1" onclick="handleChoice('Drone')">Drone</button>
+        <button id="choice-2" class="c8-choice-2" onclick="handleChoice('Helicopter')">Helicopter</button>
+        <button id="choice-3" class="choice-3" onclick="handleChoice('Airplane')">Airplane</button>
+        <button id="choice-4" class="choice-4" onclick="handleChoice('Jet')">Jet</button>
+
+        <audio id="wrong-answer-sound">
+            <source src="{% static 'sounds/wrong-answer-sound.mp3' %}" type="audio/mpeg">
+        </audio>
+
+        <audio id="correct-answer-sound">
+            <source src="{% static 'sounds/correct-answer-sound.mp3' %}" type="audio/mpeg">
+        </audio>
+
+        <div class="message-wrapper">
+            <div class="message-container">
+                <img class="message-image" src="" alt="Message Image">
+                <div id="attempt-message" class="attempt-message"></div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+
+        <script>
+            let attemptCount = 0;
+            const correctAnswer = 'Airplane';
+        
+            function handleChoice(choice) {
+                const wrongSound = document.getElementById('wrong-answer-sound');
+                const correctSound = document.getElementById('correct-answer-sound');
+                const attemptMessage = document.getElementById('attempt-message');
+                const messageWrapper = document.querySelector('.message-wrapper');
+
+                let imageSrc = '';
+                let messageText = '';
+                let buttonHtml = '';
+
+                if (choice === correctAnswer) {
+                    correctSound.play();
+                    confettiEffect();
+                    imageSrc = "{% static 'images/game_images/correct-icon.png' %}";
+                    messageText = 'Great Job! You got it right!';
+                    buttonHtml = '<button class="next-btn" onclick="goToNextItem(true)">Next ></button>';
+
+                    let correctAnswers = parseInt(sessionStorage.getItem("correctAnswers")) || 0;
+                    sessionStorage.setItem("correctAnswers", correctAnswers + 1);
+                } else {
+                    attemptCount++;
+                    wrongSound.play();
+
+                    switch (attemptCount) {
+                        case 1:
+                            imageSrc = "{% static 'images/game_images/1st-attempt-icon.png' %}";
+                            messageText = "It's okay, you can do it! <br> Try again!";
+                            buttonHtml = '<button class="close-btn" onclick="closeMessage()">Close</button>';
+                            break;
+                        case 2:
+                            imageSrc = "{% static 'images/game_images/2nd-attempt-icon.png' %}";
+                            messageText = "You're getting closer, <br> let's give it another go!";
+                            buttonHtml = '<button class="close-btn" onclick="closeMessage()">Close</button>';
+                            break;
+                        case 3:
+                            imageSrc = "{% static 'images/game_images/3rd-attempt-icon.png' %}";
+                            messageText = "You did great! Remember, progress comes <br> with practice. Let’s try the next one!";
+                            buttonHtml = '<button class="next-btn" onclick="goToNextItem(false)">Next ></button>';
+                            break;
+                    }
+                }
+
+                attemptMessage.innerHTML = `<p>${messageText}</p>${buttonHtml}`;
+
+                const messageImage = document.querySelector('.message-image');
+                messageImage.src = imageSrc;
+
+                messageWrapper.style.display = 'flex';
+                toggleButtons(false);
+            }
+
+            function confettiEffect() {
+                confetti({
+                    particleCount: 300,
+                    spread: 90,
+                    origin: { y: 0.6 }
+                });
+            }
+
+            function goToNextItem(correct) {
+                let currentPageIndex = parseInt(sessionStorage.getItem("currentPageIndex")) || 0;
+                currentPageIndex++;
+
+                if (currentPageIndex >= 5) {
+                    showResults();
+                } else {
+                    sessionStorage.setItem("currentPageIndex", currentPageIndex);
+                    const pages = JSON.parse(sessionStorage.getItem("pages"));
+                    window.location.href = pages[currentPageIndex];
+                }
+            }
+
+            function showResults() {
+                window.location.href = 'game_results.html';
+            }
+
+            function closeMessage() {
+                const messageWrapper = document.querySelector('.message-wrapper');
+                messageWrapper.style.display = 'none';
+                toggleButtons(true);
+            }
+
+            function toggleButtons(enable) {
+                const buttons = document.querySelectorAll('.choice-1, .choice-2, .choice-3, .choice-4');
+                buttons.forEach(button => {
+                    button.disabled = !enable;
+                });
+            }
+        </script>
+    </div>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="271a03d9-be47-455c-b8bc-c76fcf572106" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/SPARKLi/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/SPARKLi/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/templates/WebApp/dashboard_page.html" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/templates/WebApp/dashboard_page.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/templates/WebApp/g2_postoral_questions.html" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/templates/WebApp/g2_postoral_questions.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/templates/WebApp/g2_posttest_analyze_reading.html" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/templates/WebApp/g2_posttest_analyze_reading.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/templates/WebApp/g2_posttest_oral.html" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/templates/WebApp/g2_posttest_oral.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/templates/WebApp/g2_posttest_overall.html" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/templates/WebApp/g2_posttest_overall.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/templates/WebApp/g2_posttest_summary.html" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/templates/WebApp/g2_posttest_summary.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/templates/WebApp/g2_pretest_overall.html" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/templates/WebApp/g2_pretest_overall.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/templates/WebApp/g2_pretest_summary.html" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/templates/WebApp/g2_pretest_summary.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/templates/WebApp/g3_analyze_reading.html" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/templates/WebApp/g3_analyze_reading.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/templates/WebApp/g3_posttest_analyze_reading.html" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/templates/WebApp/g3_posttest_analyze_reading.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/templates/WebApp/g3_posttest_summary.html" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/templates/WebApp/g3_posttest_summary.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/templates/WebApp/g3_pretest_overall.html" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/templates/WebApp/g3_pretest_overall.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/templates/WebApp/g3_pretest_summary.html" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/templates/WebApp/g3_pretest_summary.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/templates/WebApp/g4_analyze_reading.html" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/templates/WebApp/g4_analyze_reading.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/templates/WebApp/g4_pretest_overall.html" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/templates/WebApp/g4_pretest_overall.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/templates/WebApp/g4_pretest_summary.html" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/templates/WebApp/g4_pretest_summary.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WebApp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/WebApp/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teacher_records.log" beforeDir="false" afterPath="$PROJECT_DIR$/teacher_records.log" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2k0ZpFYf5DPTteRu9qp4pRjjmhJ" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
+  }
+}</component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="271a03d9-be47-455c-b8bc-c76fcf572106" name="Changes" comment="" />
+      <created>1722422641492</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1722422641492</updated>
+    </task>
+    <servers />
+  </component>
+</project>

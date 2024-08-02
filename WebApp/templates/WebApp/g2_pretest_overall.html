@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="{% static 'js/grade2_script.js' %}"></script>
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+        @font-face {
+            font-family: 'Blueberry';
+            src: url("{% static 'fonts/Blueberry .ttf' %}") format('truetype');
+        }
+
+        /* Modal background */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="background3" style="overflow: hidden;">
+    <div class="custom-shape-divider-bottom-1712161624">
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="shape-fill"></path>
+            <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" class="shape-fill"></path>
+            <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" class="shape-fill"></path>
+        </svg>
+    </div>
+
+    <header>
+        <button onclick="goBack()" class="back-button">
+            <img src="{% static 'images/back-btn.png' %}" alt="Back" style="height: 7vh; width: 7vh;">
+        </button>
+        <script>
+            function goBack() {
+                window.history.back();
+            }
+        </script>
+        <img src="{% static 'images/sparkli.png' %}" height="110" style="position: relative; right: 4%;">
+        <a class="feedback-title">Summary Results and Feedback</a>
+        <button class="home" onclick="Dashboard()">Home</button>
+        <script>
+            function Dashboard() {
+                window.location.href = 'dashboard_page.html';
+            }
+        </script>
+    </header>
+
+    <h3 class="feedback-student-info">Student's Information</h3>
+    <div class="student-info-container">
+        <p class="fetch-student-info" style="overflow: hidden;"><strong>Name:</strong>{{ student.name }}</p>
+        <br>
+        <p class="fetch-student-info" style="overflow: hidden;"><strong>Date:</strong> {{ student.date }}</p>
+        <br>
+        <p class="fetch-student-info" style="overflow: hidden;"><strong>Grade Level Type:</strong> {{ student.gradelevel }}</p>
+        <br>
+        <p class="fetch-student-info" style="overflow: hidden;"><strong>Assessment Type:</strong> {{ student.assessment }}</p>
+    </div>
+    
+    <h3 class="feedback-reading-results">Reading Results</h3>
+    <div class="reading-results-container">
+        <p class="fetch-reading-results" style="display: inline;"><strong>Total Miscues:</strong> {{ total_miscues }}</p>
+        <p></p>
+        <p class="fetch-reading-results" style="display: inline;"><strong>Oral Reading Score:</strong> {{ oral_reading_score }}</p>
+    </div>
+
+    <input type="hidden" id="studentId" value="{{ student.id }}">
+
+    <h3 class="feedback-comprehension-score">Comprehension Score</h3>
+    <div class="comprehension-score-container">
+        <p class="fetch-comprehension-score" style="display: inline;">Literal: {{ pre_literal_scores }}</p>
+        <br>
+        <p class="fetch-comprehension-score" style="display: inline;">Interpretive: {{ pre_inferential_scores }}</p>
+        <br>
+        <p class="fetch-comprehension-score" style="display: inline;">Applied: {{ pre_applied_scores }}</p>
+        <br>
+        <p class="fetch-comprehension-score" style="display: inline;"><strong>Total Score:</strong> {{ pre_total_scores }}</p>
+    </div>
+
+    <h3 class="overall-feedback-title">Overall Feedback</h3>
+    <div class="overall-feedback-container">
+        <p class="fetch-overall-feedback" style="display: inline;"><strong>Reading Level:</strong> {{ reading_level }}</p>
+        <br><br>
+        <p class="fetch-overall-feedback" style="display: inline;"><strong>Literal:</strong> {{ pre_literal_fb }}</span></p>
+        <br><br>
+        <p class="fetch-overall-feedback" style="display: inline;"><strong>Interpretive:</strong> {{ pre_inferential_fb }}</span></p>
+        <br><br>
+        <p class="fetch-overall-feedback" style="display: inline;"><strong>Applied:</strong> {{ pre_applied_fb }}</span></p>
+        <br><br> 
+    </div>
+
+    <p class="fetch-overall-feedback2"><strong>Overall Feedback:</strong> {{ pre_level_fb }}</span></p>  
+    
+    <p class="feedback-txt">Want to practice more?</p>
+    <button class="mindbloom-games-btn" onclick="MindBloomGame()">Mind Bloom Game</button>
+    <img class="game-icon-img" src="{% static 'images/game_images/mindbloom-img.png' %}">
+
+    <!-- Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Reading level saved successfully!</p>
+        </div>
+    </div>
+
+    <script>
+        
+        function MindBloomGame() {
+    // Retrieve the reading level from the HTML element
+    const readingLevelElement = document.querySelector('.fetch-overall-feedback');
+    let readingLevel = null;
+
+    if (readingLevelElement) {
+        // Extract the text content and parse the reading level from it
+        readingLevel = readingLevelElement.textContent.split(':')[1].trim().toLowerCase();
+    }
+
+    // If reading level is still not found, get it from localStorage
+    if (!readingLevel) {
+        readingLevel = localStorage.getItem('readingLevel');
+    }
+
+    // Map reading levels to corresponding game URLs
+    const gameUrls = {
+        'frustration': 'game_claveria.html',
+        'instructional': 'game_marungko.html',
+        'independent': 'game_puzzle.html'
+    };
+
+    // Check if the reading level exists and map it to the corresponding game
+    if (readingLevel) {
+        const gameUrl = gameUrls[readingLevel];
+
+        if (gameUrl) {
+            window.location.href = gameUrl;
+        } else {
+            alert('Reading level not recognized.');
+        }
+    } else {
+        alert('Reading level not found.');
+    }
+}
+
+
+        function showModal() {
+            var modal = document.getElementById("successModal");
+            var span = document.getElementsByClassName("close")[0];
+
+            modal.style.display = "block";
+
+            span.onclick = function() {
+                modal.style.display = "none";
+                window.location.href = 'g2_pretest_overall.html'; // Redirect after closing the modal
+            }
+
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                    window.location.href = 'g2_pretest_overall.html'; // Redirect if click outside of the modal
+                }
+            }
+        }
+    </script>
+</body>
+</html>

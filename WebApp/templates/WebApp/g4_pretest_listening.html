@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 4 Pretest Listening Comprehension</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+    </style> 
+    <style>
+        @font-face {
+            font-family: 'Blueberry';
+            src: url("{% static 'fonts/Blueberry .ttf' %}") format('truetype');
+        }
+    </style>
+    <style>
+        .highlight {
+            background-color: rgb(180, 249, 146);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="g4-background-str3">
+        <div class="custom-shape-divider-bottom-1712161624">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="shape-fill"></path>
+                <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" class="shape-fill"></path>
+                <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" class="shape-fill"></path>
+            </svg>
+        </div>
+
+        <header>
+            <button onclick="goBack()" class="back-button">
+                <img src="{% static 'images/back-btn.png' %}" alt="Back" style="height: 7vh; width: 7vh;">
+            </button>
+            <script>
+                function goBack() {
+                    window.history.back();
+                }
+            </script>
+            <img src="{% static 'images/sparkli.png' %}" height="110" style="position: relative; right: 4%;">
+            <a class="g2prelistening">PRETEST - GRADE 4 LEVEL LISTENING COMPREHENSION</a>
+            <button class="home-btn" onclick="Dashboard()">Home</button>
+            <script>
+                function Dashboard() {
+                    window.location.href = 'dashboard_page.html';
+                }
+            </script> 
+        </header> 
+
+        <form id="invitation_letter">
+            {% csrf_token %}
+            <div class="storyboard">
+                <h1 class="title-str3" name="title">{{ pretest_passage_title }}</h1>
+                <div class="storyboard_str3" id="inputText" rows="9" cols="80">{{ reference_text }}</div><br>
+            </div>
+            <div class="wrapper-adjspeed-str3">
+                <label class="speedlabel" for="speed">Adjust Speed:</label>
+                <input class="adjspeed" type="range" id="speed" name="speed" min="0.7" max="1.2" step="0.1" value="1"><br>
+            </div>
+            <button class="convert-to-speech-str3" type="button" onclick="speakText()">
+                <img src="{% static 'images/speaker.png' %}" height="40" width="40">
+            </button>
+            <button class="stopspeech-str3" type="button" onclick="stopSpeech()">
+                <img src="{% static 'images/stop_fill.png' %}" height="40" width="40">
+            </button>
+        </form>
+
+        <button class="next-btn-str3" onclick="Next()">Proceed to Questions...</button>
+        <script>
+            function Next(){
+                window.location.href = 'g4_preoral_questions.html'; 
+            }
+        </script>
+    
+        <script>
+            var utterance = null;
+            var wordIndex = 0;
+            var words = [];
+
+            function speakText() {
+                var formElement = document.getElementById('invitation_letter');
+                var formData = new FormData(formElement);
+                var text = document.getElementById('inputText').innerText;
+                var title = document.querySelector('.title-str3').innerText;
+                var speed = parseFloat(formData.get('speed'));
+
+                if (window.speechSynthesis.speaking) {
+                    window.speechSynthesis.cancel();
+                }
+
+                var fullText = title + ' ' + text;
+                utterance = new SpeechSynthesisUtterance(fullText);
+                utterance.lang = 'en-PH';
+                utterance.volume = 1;
+                utterance.rate = speed;
+                utterance.pitch = 1;
+                utterance.voice = speechSynthesis.getVoices().find(function(voice) {
+                    return voice.name === 'Google US English';
+                });
+
+                utterance.onboundary = function(event) {
+                    if (event.name === 'word' && event.charIndex > title.length + 1) {
+                        highlightWord(event.charIndex - title.length - 1);
+                    }
+                };
+
+                window.speechSynthesis.speak(utterance);
+
+                words = splitTextIntoWords(text);
+                displayTextWithSpans(words);
+            }
+
+            function stopSpeech() {
+                if (utterance) {
+                    window.speechSynthesis.cancel();
+                }
+                clearHighlights();
+            }
+
+            function highlightWord(charIndex) {
+                clearHighlights();
+                var span = document.querySelector(`span[data-start="${charIndex}"]`);
+                if (span) {
+                    span.classList.add('highlight');
+                }
+            }
+
+            function clearHighlights() {
+                var highlighted = document.querySelectorAll('.highlight');
+                highlighted.forEach(function(span) {
+                    span.classList.remove('highlight');
+                });
+            }
+
+            function splitTextIntoWords(text) {
+                var words = [];
+                var startIndex = 0;
+                var datePattern = /\b\d{1,2}\/\d{1,2}\/\d{4}\b|\b\d{1,2}\s[A-Za-z]+\s\d{4}\b/g;
+                var match;
+                var lastIndex = 0;
+
+                while ((match = datePattern.exec(text)) !== null) {
+                    var beforeDate = text.slice(lastIndex, match.index).split(' ');
+                    beforeDate.forEach((word, index) => {
+                        if (word.trim() !== '') {
+                            words.push({
+                                word: word,
+                                start: startIndex
+                            });
+                            startIndex += word.length + 1;
+                        }
+                    });
+
+                    words.push({
+                        word: match[0],
+                        start: match.index
+                    });
+                    startIndex = match.index + match[0].length + 1;
+                    lastIndex = datePattern.lastIndex;
+                }
+
+                var remainingText = text.slice(lastIndex).split(' ');
+                remainingText.forEach((word, index) => {
+                    if (word.trim() !== '') {
+                        words.push({
+                            word: word,
+                            start: startIndex
+                        });
+                        startIndex += word.length + 1;
+                    }
+                });
+
+                return words;
+            }
+
+            function displayTextWithSpans(words) {
+                var textElement = document.getElementById('inputText');
+                var fullText = words.map((wordObj) => `<span data-start="${wordObj.start}">${wordObj.word}</span>`).join(' ');
+                textElement.innerHTML = fullText;
+            }
+        </script>
+    </div>
+</body>
+</html>

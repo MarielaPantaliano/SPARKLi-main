@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading Comprehension Results</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="{% static 'js/grade3_script.js' %}"></script>
+  <style>
+      @font-face {
+          font-family: 'Comic Sans';
+          src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+      }
+      @font-face {
+          font-family: 'Blueberry';
+          src: url("{% static 'fonts/Blueberry .ttf' %}") format('truetype');
+      }
+  </style> 
+</head>
+<body class="g3_background" style="overflow: hidden;">
+  <div class="custom-shape-divider-bottom-1712226670">
+    <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+        <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="shape-fill"></path>
+        <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" class="shape-fill"></path>
+        <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" class="shape-fill"></path>
+    </svg>
+  </div>
+
+
+  <header>
+    <button onclick="goBack()" class="back-button">
+      <img src="{% static 'images/back-btn.png' %}" alt="Back" style="height: 7vh; width: 7vh;">
+    </button>
+    <script>
+      function goBack() {
+        window.history.back();
+      }
+
+    </script>
+    <img src="{% static 'images/sparkli.png' %}" height="110" style="position: relative; right: 4%;">
+    <p class="comprehension-title">Reading Comprehension Results</p>
+    <button class="home" onclick="Dashboard()">Home</button>
+    <script>
+      function Dashboard() {
+        window.location.href = 'dashboard_page.html';
+      }
+    </script>
+  </header> 
+
+
+    <div id="loading" class="loading" style="display: none;">
+      <p id="loading-message" class="feedback-loading-message">Feedback Processing, Please Wait...</p>
+      <div class="loader"></div>
+    </div>
+
+  <div class="c-container">
+    <div class="c-card">
+      <div class="summary-scrollbox">
+        
+       
+         {% for question in questions %}
+         <div class="summary-questions">Question {{ forloop.counter }}: {{ question.pretest_question }}</div>
+         <div class="summary-container">
+          <p class="summary-answers-label">Answer:<span class="summary-answers" id="ans{{ forloop.counter }}" name="ans{{ forloop.counter }}"></span></p>  
+         </div>
+         <div class="summary-result-answers" id="result-ans{{ forloop.counter }}"></div>
+     {% endfor %}
+ 
+        <div class="overall-scores" id="overallScoresContainer"></div>
+
+      </div></div></div>
+ 
+        <input type="hidden" id="gradeLevel" name="grade_level" value="3">
+
+
+        <button id="analyzeBtn" class="analyzebtn" onclick="analyzeAnswers()">Check Answers</button>
+        
+        <button id="doneBtn" class="save-answers-btn" onclick="sendDataToServer()" disabled>Save</button>
+      </div>
+    </div>
+  </div>
+  <input type="hidden" id="studentId" value="{{ student_id }}">
+
+  <!-- Modal -->
+  <div id="successModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <p class="summary-modal-txt">Data saved successfully!</p>
+      <p>You may view the student's results and feedback on the student record's dashboard page.</p>
+    </div>
+  </div>
+
+  <script>
+    
+    function preprocessData(data) {
+  const cleanedData = {};
+  for (const key in data) {
+    if (data.hasOwnProperty(key)) {
+      cleanedData[key] = data[key] ? data[key].replace(/"/g, '') : ''; // Remove all quotation marks
+    }
+  }
+  return cleanedData;
+}
+
+function sendDataToServer() {
+  const data = {
+    overallScores: localStorage.getItem('overallScores'),
+    literalScores: localStorage.getItem('literalScores'),
+    inferentialScores: localStorage.getItem('inferentialScores'),
+    appliedScores: localStorage.getItem('appliedScores'),
+    readingLevel: localStorage.getItem('readingLevel'),
+    literalFeedback: localStorage.getItem('literalFeedback'),
+    inferentialFeedback: localStorage.getItem('inferentialFeedback'),
+    appliedFeedback: localStorage.getItem('appliedFeedback'),
+    levelFeedback: localStorage.getItem('levelFeedback'),
+  };
+
+  const cleanedData = preprocessData(data);
+
+  fetch('/save-pre-assessment/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(cleanedData),
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        showModal();
+        setTimeout(() => {
+          window.location.href = 'dashboard_page.html';
+        }, 5000); 
+      } else {
+        console.error('Error:', data.message);
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}
+
+    function showModal() {
+      document.getElementById('successModal').style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('successModal').style.display = 'none';
+    }
+
+    // Close modal if the user clicks anywhere outside of the modal
+    window.onclick = function(event) {
+      if (event.target == document.getElementById('successModal')) {
+        closeModal();
+      }
+    }
+  </script>
+</body>
+</html>

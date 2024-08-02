@@ -1,0 +1,68 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPARKLi</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+    </style>
+    <style>
+        @font-face {
+            font-family: 'Blueberry';
+            src: url("{% static 'fonts/Blueberry .ttf' %}") format('truetype');
+        }
+    </style>
+    
+</head>
+<body>
+    <div class="background-index">
+            <img src="{% static 'images/background_index.jpg' %}" height="100%" width="100%">
+        <audio id="backgroundMusic" loop>
+        <source src="{% static 'sounds/background_music.mp3' %}" type="audio/mpeg">
+        </audio>
+        <button id="soundButton" class="background-music" onclick="playBackgroundMusic()">
+            <img src="{% static 'images/speaker.png' %}" style="height: 5vh; width: 5vh;">
+        </button>
+
+        <script>
+            var isPlaying = false;
+
+            function playBackgroundMusic() {
+                var soundButton = document.getElementById("soundButton");
+                var backgroundMusic = document.getElementById("backgroundMusic");
+
+            if (isPlaying) {
+                backgroundMusic.pause();
+            } else {
+                backgroundMusic.play();
+            }
+                isPlaying = !isPlaying;
+            }
+        </script>
+
+        <div class="background-title">
+            <img src="{% static 'images/background-title.png' %}" style="height: 45vh; width: 40vw;">
+        </div>
+        <audio id="clickSound">
+            <source src="{% static 'sounds/click_sound.mp3' %}" type="audio/mpeg">
+        </audio>
+        <button style="font-family: 'Comic Sans';" class="get-started" onclick="playClickSound()">Get Started...</button>
+        <script>
+            function playClickSound() {
+                var audio = document.getElementById("clickSound");
+                audio.play();  
+                setTimeout(function() {
+                    window.location.href = "login_page.html";
+                }, audio.duration * 1000); 
+            }
+        </script>
+        </div>
+</body>
+</html>

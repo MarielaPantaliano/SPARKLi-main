@@ -1,0 +1,310 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPARKLi</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+    </style>
+    <style>
+        @font-face {
+            font-family: 'Blueberry';
+            src: url("{% static 'fonts/Blueberry .ttf' %}") format('truetype');
+        }
+    </style>
+    
+</head>
+<body> 
+    <div class="background-dashboard">
+     <img src="{% static 'images/background-db-overall.png' %}" height="100%" width="100%">
+
+     <img class="woman" src="{% static 'images/woman.png' %}">
+     <h2 class="text-greeting">Hello Teacher {{ teacher.username }}!</h2>
+    
+    <div class="side-nav">
+
+        <ul class="third">
+            <li class="active"><img src="{% static 'images/home_icon.png' %}"><p class="side-nav-txt">Home</p></li>
+        </ul>
+
+        <ul class="fourth">
+            <li class="profile" id="profile-page" ><img src="{% static 'images/user_icon.png' %}"><p class="side-nav-txt">Profile</p></li>
+        </ul>
+    
+        <ul class="fifth">
+            <li class="help"><img src="{% static 'images/help_icon.png' %}"><p class="side-nav-txt">Help</p></li>
+        </ul>
+            
+         <ul class="second">
+            <li class="logout"><img src="{% static 'images/logout_icon.png' %}"><p class="side-nav-txt">Logout</p></li>
+        </ul>
+
+        </div>
+
+
+        <section id="content">
+            <main> 
+            <div>
+                <img class="sparkli-dashboard-logo" src="{% static 'images/sparkli.png' %}">
+                </div>
+            <div class="head-title">
+                <div class="left">
+                </div>
+        </div>
+            <div class="table-data">
+            <div class="order">
+                <div class="head">
+                    <h3>Student Records</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Age</th>
+                            <th>Grade & Section</th>
+                            <th>Date</th>
+                            <th>Grade Level</th>
+                            <th>Assessment Type</th>
+                            <th>Pretest Result</th>
+                            <th>Posttest</th>
+                            <th>Posttest Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ student.id }}</td>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.age }}</td>
+                            <td>{{ student.gradesection }}</td>
+                            <td>{{ student.date }}</td>
+                            <td>{{ student.gradelevel }}</td>
+                            <td>{{ student.assessment }}</td>
+                            <td><span class="pretest-result-db" onclick="fetchPretest('{{ student.id }}', '{{ student.gradelevel }}')">
+                                Pretest Result
+                            </span></td>
+                            <td><span class="posttest-db" onclick="fetchAssessment('{{ student.id }}', '{{ student.gradelevel }}', '{{ student.assessment }}')">Posttest</span></td>
+                            <td>
+                                {% if student.post_reading_level %}
+                                <span class="posttest-result-db"
+                                      onclick="fetchPosttest('{{ student.id }}', '{{ student.gradelevel }}', '{{ student.post_reading_level }}')">
+                                    Posttest Result
+                                </span>
+                            {% else %}
+                                <span class="posttest-result-db disabled" style="color: grey; cursor: not-allowed;">
+                                    Posttest Result
+                                </span>
+                            {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            </main>
+        </section>
+    
+        <img class="pic1" src="{% static 'images/pic1.png' %}">
+        <div class="container-db">
+            <div class="db-card">
+                <div class="item_title">Reading Comprehension</div>
+                <div class="item_text">Assess Students for Better Comprehension</div>
+    
+                <button class="click_here_button" onclick="ClickHere1()">Click Here!</button>
+                <script>
+                function ClickHere1() {
+                    window.location.href = 'input_student_info.html';
+                }
+                </script>
+                </div>
+            </div>
+    
+            <img class="pic2" src="{% static 'images/pic2.png' %}">
+            <div class="container-db2">
+                <div class="db-card2">
+                    <div class="item_title">Reading is Fun!</div>
+                    <div class="item_text">Read, read, read. Keep learning!</div>
+    
+                    <button class="click_here_button" onclick="ClickHere2()">Click Here!</button>
+                    <script>
+                    function ClickHere2() {
+                    window.location.href = 'read_page.html';
+                    }
+                </script>
+                    </div>
+                </div>
+    
+               
+                <div id="popup-logout" class="popup-container">
+                    <div class="popup-dashboard-content">
+                        <p class="popup-logout-txt">Are you sure you want to logout?</p>
+                        <button class="btn-yes" id="confirmLogout">Yes</button>
+                        <button class="btn-no" id="cancelLogout">No</button>
+                    </div>
+                </div>
+
+
+                <div id="popup-help" class="popup-container">
+                    <div class="popup-dashboard-content">
+                        <p class="popup-header">How can we help?</p>
+                        <p class="popup-text">Message us on our email if you have any concerns about the web application. We will help you solve any problems you encounter.</p>
+                        <p class="popup-email"><u>sparkli462@gmail.com</u></p>
+                        <p class="popup-thanks">Thank you!</p>
+                        <button class="popup-btn" id="cancelHelp">Close</button>
+                    </div>
+                </div>
+
+            
+                <script>
+                    function fetchPretest(studentId, gradeLevel) {
+                        console.log("Student ID:", studentId);
+                        console.log("Grade Level:", gradeLevel);
+                        let url = '';
+                        if (gradeLevel === 'grade 2') {
+                            url = 'g2_pretest_overall.html?student=' + encodeURIComponent(studentId);
+                        } else if (gradeLevel === 'grade 3') {
+                            url = 'g3_pretest_overall.html?student=' + encodeURIComponent(studentId);
+                        } else if (gradeLevel === 'grade 4') {
+                            url = 'g4_pretest_overall.html?student=' + encodeURIComponent(studentId);
+                        }
+                        window.location.href = url;
+                    }
+
+                    function fetchPosttest(studentId, gradeLevel, postReadingLevel) {
+                        console.log("Student ID:", studentId);
+                        console.log("Grade Level:", gradeLevel);
+                        console.log("Post Reading Level:", postReadingLevel);
+
+                        let url = '';
+
+                        // Check if post_reading_level is one of the specified values
+                        if (postReadingLevel === 'instructional' || postReadingLevel === 'frustration' || postReadingLevel === 'independent') {
+                            if (gradeLevel === 'grade 2') {
+                                url = 'g2_posttest_overall.html?student=' + encodeURIComponent(studentId);
+                            } else if (gradeLevel === 'grade 3') {
+                                url = 'g3_posttest_overall.html?student=' + encodeURIComponent(studentId);
+                            } else if (gradeLevel === 'grade 4') {
+                                url = 'g4_posttest_overall.html?student=' + encodeURIComponent(studentId);
+                            }
+                        } else {
+                            // Handle the case where post_reading_level is not one of the specified values
+                            console.log("Please take the Post-Test Assessment first.");
+                            alert("Please take the Post-Test Assessment first.");
+                            return; // Exit the function if the level is not valid
+                        }
+
+                        window.location.href = url;
+                    }
+
+                
+    function fetchAssessment(studentId, gradeLevel, assessmentType) {
+    console.log("Student ID:", studentId);
+    console.log("Grade Level:", gradeLevel);
+    console.log("Assessment Type:", assessmentType);
+
+    let url = '';
+    if (gradeLevel === 'grade 2') {
+        if (assessmentType === 'Oral Reading') {
+            url = 'g2_posttest_oral.html';
+        } else if (assessmentType === 'Listening Comprehension') {
+            url = 'g2_posttest_listening.html';
+        }
+    } else if (gradeLevel === 'grade 3') {
+        if (assessmentType === 'Oral Reading') {
+            url = 'g3_posttest_oral.html';
+        } else if (assessmentType === 'Listening Comprehension') {
+            url = 'g3_posttest_listening.html';
+        }
+    } else if (gradeLevel === 'grade 4') {
+        if (assessmentType === 'Oral Reading') {
+            url = 'g4_posttest_oral.html';
+        } else if (assessmentType === 'Listening Comprehension') {
+            url = 'g4_posttest_listening.html';
+        }
+    }
+
+    // Add the student_id parameter to the URL
+    url += '?student_id=' + encodeURIComponent(studentId);
+
+    window.location.href = url;
+}
+// Function to get CSRF token
+function getCSRFToken() {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, 'csrftoken'.length + 1) === ('csrftoken' + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring('csrftoken'.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+                    var logoutModal = document.getElementById("popup-logout");
+                    var logoutBtn = document.querySelector('.logout');
+                    var confirmLogout = document.getElementById("confirmLogout");
+                    var cancelLogout = document.getElementById("cancelLogout");
+
+                    var helpModal = document.getElementById("popup-help");
+                    var helpBtn = document.querySelector('.help');
+                    var cancelHelp = document.getElementById("cancelHelp");
+
+                    var sideNav = document.querySelector('.side-nav');
+
+                    logoutBtn.onclick = function(event) {
+                        event.preventDefault();
+                        sideNav.classList.add('grey-out');
+                        logoutModal.style.display = "block";
+                    }
+
+                    cancelLogout.onclick = function() {
+                        logoutModal.style.display = "none";
+                        sideNav.classList.remove('grey-out');
+                    }
+
+                    confirmLogout.onclick = function() {
+                        window.location.href = '{% url "logout_view" %}';
+                    }
+
+                    helpBtn.onclick = function(event) {
+                        event.preventDefault();
+                        sideNav.classList.add('grey-out');
+                        helpModal.style.display = "block";
+                    }
+
+                    cancelHelp.onclick = function() {
+                        helpModal.style.display = "none";
+                        sideNav.classList.remove('grey-out');
+                    }
+
+                    window.onclick = function(event) {
+                    }
+
+                    var profileBtn = document.getElementById("profile-page");
+                    profileBtn.onclick = function() {
+                        window.location.href = 'profile_page.html';
+                    }
+
+                    var aboutBtn = document.getElementById("about-page");
+                    aboutBtn.onclick = function() {
+                        window.location.href = 'about_page.html';
+                    }
+                </script>
+                
+        </div>
+    </div>  
+</div>
+</body>
+</html>

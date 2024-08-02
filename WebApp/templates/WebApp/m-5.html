@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Marungko!</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/game_style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <script src="{% static 'js/music-player.js' %}"></script>
+
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+
+        @font-face {
+            font-family: 'More Sugar Regular';
+            src: url("{% static 'fonts/more-sugar.regular.ttf' %}") format('truetype');
+        }
+
+        @font-face {
+            font-family: 'More Sugar Thin';
+            src: url("{% static 'fonts/more-sugar.thin.ttf' %}") format('truetype');
+        }
+    </style>
+</head>
+<body>
+    <div class="game-bg">
+        <div class="container1"></div>
+        <div class="container2"></div>
+        <img class="game-logo" src="{% static 'images/game_images/game-logo.png' %}">
+        <img class="fillnfun" src="{% static 'images/game_images/fillnfun.png' %}">
+        <h4 class="m-hint-ins">Need hint? Press the button <br> to allow text-to-speech</h4>
+
+        <audio id="game-bg-music" loop>
+            <source src="{% static 'sounds/game-bg-music.mp3' %}" type="audio/mpeg">
+        </audio>
+        
+        <button id="toggle-music" class="toggle-music">
+            <img src="{% static 'images/speaker.png' %}" height="40" width="40">
+        </button>
+        
+
+            <p class="phrase-to-complete">"The ball is ro_nd."</p>
+            <img class="m-round" src="{% static 'images/game_images/round.png' %}">
+            <input type="text" id="missing-letter" class="input-letter" maxlength="1" placeholder="What is the missing letter?">
+
+            <button id="submit-answer" class="submit-answer" onclick="handleChoice()">Submit</button>
+            <button id="speak-hint" class="hint-speech" onclick="speakHint()">
+                <span class="back"></span>
+                <span class="front"></span>
+              </button>
+
+
+        <audio id="wrong-answer-sound">
+            <source src="{% static 'sounds/wrong-answer-sound.mp3' %}" type="audio/mpeg">
+        </audio>
+
+        <audio id="correct-answer-sound">
+            <source src="{% static 'sounds/correct-answer-sound.mp3' %}" type="audio/mpeg">
+        </audio>
+
+        <div class="message-wrapper">
+            <div class="message-container">
+                <img class="message-image" src="" alt="Message Image">
+                <div id="attempt-message" class="attempt-message"></div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+
+        <script>
+            let attemptCount = 0;
+            const correctAnswer = 'u';
+            const hintPhrase = "The ball is round";
+
+            function handleChoice() {
+                const userInput = document.getElementById('missing-letter').value;
+                const wrongSound = document.getElementById('wrong-answer-sound');
+                const correctSound = document.getElementById('correct-answer-sound');
+                const attemptMessage = document.getElementById('attempt-message');
+                const messageWrapper = document.querySelector('.message-wrapper');
+
+                let imageSrc = '';
+                let messageText = '';
+                let buttonHtml = '';
+
+                if (userInput === correctAnswer) {
+                    correctSound.play();
+                    confettiEffect();
+                    imageSrc = "{% static 'images/game_images/correct-icon.png' %}";
+                    messageText = 'Great Job! You got it right!';
+                    buttonHtml = '<button class="next-btn" onclick="goToNextItem(true)">Next ></button>';
+
+                    let correctAnswers = parseInt(sessionStorage.getItem("correctAnswers")) || 0;
+                    sessionStorage.setItem("correctAnswers", correctAnswers + 1);
+                } else {
+                    attemptCount++;
+                    wrongSound.play();
+
+                    switch (attemptCount) {
+                        case 1:
+                            imageSrc = "{% static 'images/game_images/1st-attempt-icon.png' %}";
+                            messageText = "It's okay, you can do it! <br> Try again!";
+                            buttonHtml = '<button class="close-btn" onclick="closeMessage()">Close</button>';
+                            break;
+                        case 2:
+                            imageSrc = "{% static 'images/game_images/2nd-attempt-icon.png' %}";
+                            messageText = "You're getting closer, <br> let's give it another go!";
+                            buttonHtml = '<button class="close-btn" onclick="closeMessage()">Close</button>';
+                            break;
+                        case 3:
+                            imageSrc = "{% static 'images/game_images/3rd-attempt-icon.png' %}";
+                            messageText = "You did great! Remember, progress comes <br> with practice. Let’s try the next one!";
+                            buttonHtml = '<button class="next-btn" onclick="goToNextItem(false)">Next ></button>';
+                            break;
+                    }
+                }
+
+                attemptMessage.innerHTML = `<p>${messageText}</p>${buttonHtml}`;
+
+                const messageImage = document.querySelector('.message-image');
+                messageImage.src = imageSrc;
+
+                messageWrapper.style.display = 'flex';
+                toggleInput(false);
+            }
+
+            function confettiEffect() {
+                confetti({
+                    particleCount: 300,
+                    spread: 90,
+                    origin: { y: 0.6 }
+                });
+            }
+
+            function goToNextItem(correct) {
+                let currentPageIndex = parseInt(sessionStorage.getItem("currentPageIndex")) || 0;
+                currentPageIndex++;
+
+                if (currentPageIndex >= 5) {
+                    showResults();
+                } else {
+                    sessionStorage.setItem("currentPageIndex", currentPageIndex);
+                    const pages = JSON.parse(sessionStorage.getItem("pages"));
+                    window.location.href = pages[currentPageIndex];
+                }
+            }
+
+            function showResults() {
+                window.location.href = 'game_results.html';
+            }
+
+            function closeMessage() {
+                const messageWrapper = document.querySelector('.message-wrapper');
+                messageWrapper.style.display = 'none';
+                toggleInput(true);
+            }
+
+            function toggleInput(enable) {
+                const input = document.getElementById('missing-letter');
+                const button = document.getElementById('submit-answer');
+                input.disabled = !enable;
+                button.disabled = !enable;
+            }
+
+            function speakHint() {
+                const speech = new SpeechSynthesisUtterance(hintPhrase);
+                window.speechSynthesis.speak(speech);
+            }
+        </script>
+    </div>
+</body>
+</html>

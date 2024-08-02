@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Results</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/game_style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <script src="{% static 'js/music-player.js' %}"></script>
+
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+
+        @font-face {
+            font-family: 'More Sugar Regular';
+            src: url("{% static 'fonts/more-sugar.regular.ttf' %}") format('truetype');
+        }
+
+        @font-face {
+            font-family: 'More Sugar Thin';
+            src: url("{% static 'fonts/more-sugar.thin.ttf' %}") format('truetype');
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-bg">
+        <img src="{% static 'images/sparkli.png' %}" class="sparkli-logo-game">
+        <img class="game-logo-results" src="{% static 'images/game_images/game-logo.png' %}">
+        <img class="results-bg1" src="{% static 'images/game_images/results-bg1.png' %}">
+        <img class="results-bg2" src="{% static 'images/game_images/results-bg2.png' %}">
+        <img class="results-bg3" src="{% static 'images/game_images/results-bg3.png' %}">
+        <img class="mindbloom" src="{% static 'images/game_images/mindbloom-img.png' %}">
+
+        <div class="results-bg">
+            <h3 class="game-txt">YOU SCORED</h3>
+            <div id="score-text-0" class="score-txt-0 hidden"></div>
+            <div id="score-text-1" class="score-txt-1 hidden"></div>
+            <div id="score-text-2" class="score-txt-2 hidden"></div>
+            <div id="score-text-3" class="score-txt-3 hidden"></div>
+            <div id="score-text-4" class="score-txt-4 hidden"></div>
+            <div id="score-text-5" class="score-txt-5 hidden"></div>
+            <div id="results-message" class="results-message"></div>
+        </div>
+
+        <button class="play-again-btn" onclick="playAgain()">Play Again</button>
+
+        <button class="home" onclick="Dashboard()">Back to Home</button>
+        <script>
+        function Dashboard() {
+            window.location.href = 'dashboard_page.html';
+        }
+        </script>
+
+        <audio id="game-bg-music" loop>
+            <source src="{% static 'sounds/game-bg-music.mp3' %}" type="audio/mpeg">
+        </audio>
+
+        <button id="toggle-music" class="toggle-music">
+            <img src="{% static 'images/speaker.png' %}" height="40" width="40">
+        </button>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const correctAnswers = parseInt(sessionStorage.getItem("correctAnswers")) || 0;
+                const totalQuestions = 5;
+                let resultsMessage = "";
+    
+                switch (correctAnswers) {
+                    case 1:
+                        document.getElementById('score-text-1').innerText = `1 out of ${totalQuestions}`;
+                        document.getElementById('score-text-1').classList.remove('hidden');
+                        resultsMessage = "It's okay! Mistakes help us learn.<br>Let's practice a bit more and try again.";
+                        break;
+                    case 2:
+                        document.getElementById('score-text-2').innerText = `2 out of ${totalQuestions}`;
+                        document.getElementById('score-text-2').classList.remove('hidden');
+                        resultsMessage = "You're making progress!<br>Let's keep practicing to get even better.";
+                        break;
+                    case 3:
+                        document.getElementById('score-text-3').innerText = `3 out of ${totalQuestions}`;
+                        document.getElementById('score-text-3').classList.remove('hidden');
+                        resultsMessage = "You're doing well! Let's focus on<br>what we've learned and try again.";
+                        break;
+                    case 4:
+                        document.getElementById('score-text-4').innerText = `4 out of ${totalQuestions}`;
+                        document.getElementById('score-text-4').classList.remove('hidden');
+                        resultsMessage = "You're on the right track! Keep practicing<br>and you'll see even better results.";
+                        break;
+                    case 5:
+                        document.getElementById('score-text-5').innerText = `5 out of ${totalQuestions}`;
+                        document.getElementById('score-text-5').classList.remove('hidden');
+                        resultsMessage = "You nailed it! You've worked hard<br>and it shows. Keep up the amazing effort!";
+                        break;
+                    default:
+                        document.getElementById('score-text-0').innerText = `0 out of ${totalQuestions}`;
+                        document.getElementById('score-text-0').classList.remove('hidden');
+                        resultsMessage = "Sorry, you didn't make any points.<br>Don't worry, let's practice and try again!";
+                        break;
+                }
+    
+                document.getElementById('results-message').innerHTML = resultsMessage;
+            });
+            
+    
+            function playAgain() {
+                var readingLevel = localStorage.getItem('readingLevel');
+
+
+            if (readingLevel) {
+                readingLevel = readingLevel.toLowerCase();
+                if (readingLevel === 'frustration') {
+                    window.location.href = 'game_claveria.html';
+                } else if (readingLevel === 'instructional') {
+                    window.location.href = 'game_marungko.html';
+                } else if (readingLevel === 'independent') {
+                    window.location.href = 'game_puzzle.html';
+                } else {
+                    alert('Reading level not recognized.');
+                }
+            } else {
+                alert('Reading level not found.');
+            }
+        }
+        </script>
+    </div>
+</body>
+</html>

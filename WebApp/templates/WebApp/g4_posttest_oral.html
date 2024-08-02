@@ -1,0 +1,183 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 4 Posttest Oral Reading</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+    </style> 
+    <style>
+        @font-face {
+            font-family: 'Blueberry';
+            src: url("{% static 'fonts/Blueberry .ttf' %}") format('truetype');
+        }
+    </style> 
+</head>
+<body>
+  {% if error %}
+  <p>{{ error }}</p>
+  {% endif %}
+  <div class="g4_posttest_background" style="overflow: hidden;">
+    <div class="custom-shape-divider-bottom-1712161624">
+      <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+          <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="shape-fill"></path>
+          <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" class="shape-fill"></path>
+          <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" class="shape-fill"></path>
+      </svg>
+  </div>
+  <div class="g2-container">
+    <div class="card3">
+      <p class="g2-txt">Read the following passage aloud:</p>
+      <p class="g2-prompt">Prompt: {{ posttest_passage_prompt }}</p>
+      <h2 class="g2-title" style="left: 29%; top: 36%;">{{ posttest_passage_title }}</h2>
+      <div class="g4-pretest-scrollbar">
+        <textarea class="g4-posttest-passage-listening" name="text" rows="6" cols="30" readonly>{{ reference_text }}</textarea>
+      </div>
+      
+      <button id="start-btn" class="start-btn">Start Recording</button>
+      <button id="stop-btn" class="stop-btn" disabled>Stop Recording</button>
+    </div>
+  </div>
+  <div class="g3-container">
+    <div class="card4">
+      <p class="g2-txt">Transcription Result:</p>
+      <div id="results" class="results"></div>
+
+      <form id="analysis-form" method="post" action="{% url 'g4_posttest_oral' %}">
+        {% csrf_token %}
+        <input type="hidden" id="reference_text" name="reference_text" value="{{ reference_text }}">
+        <input type="hidden" id="start_time" name="start_time" value="">
+        <input type="hidden" id="end_time" name="end_time" value="">
+        <input type="hidden" id="transcript" name="transcript" value="">
+        <input type="hidden" id="student_id" name="student_id" value="{{ student.id }}">
+        <button type="button" class="analyze-btn" onclick="Analyze()" disabled>Analyze</button>
+      </form>
+      
+      <script>
+        function Analyze() {
+            const start_time = document.getElementById('start_time').value;
+            const end_time = document.getElementById('end_time').value;
+            const transcript = document.getElementById('results').innerText;
+    
+            document.getElementById('transcript').value = transcript; 
+    
+            document.getElementById('analysis-form').submit();
+    
+            document.getElementById('loading').style.display = 'block';
+    
+            console.log("Start Time:", start_time);
+            console.log("End Time:", end_time);
+            console.log("Transcript:", transcript);
+        }
+    </script>
+      </div>
+    </div>
+
+  <div id="loading" class="loading">
+    <p id="loading-message" class="loading-message">Analyzing, Please Wait...</p>
+    <div class="loader" class="loader"></div>
+</div>
+
+  <script>
+    const startBtn = document.getElementById("start-btn");
+    const stopBtn = document.getElementById("stop-btn");
+    const analyzeBtn = document.querySelector(".analyze-btn");
+    const resultsDiv = document.getElementById("results");
+
+    let recognition;
+    let recording = false;
+    let startTime;
+    let endTime;
+    let transcript = ""; 
+
+    if ('webkitSpeechRecognition' in window) {
+      recognition = new webkitSpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      startBtn.addEventListener("click", () => {
+        if (!recording) {
+          recognition.start();
+          recording = true;
+          startBtn.disabled = true;
+          stopBtn.disabled = false;
+          startTime = new Date();
+        }
+      });
+
+      stopBtn.addEventListener("click", () => {
+        if (recording) {
+          recognition.stop();
+          recording = false;
+          stopBtn.disabled = true;
+          startBtn.disabled = false;
+          endTime = new Date();
+          document.getElementById("start_time").value = startTime.toISOString();
+          document.getElementById("end_time").value = endTime.toISOString();
+          analyzeBtn.disabled = false; 
+        }
+      });
+
+      recognition.addEventListener("result", (event) => {
+        transcript = Array.from(event.results)
+          .map(result => result[0])
+          .map(result => result.transcript)
+          .join("");
+
+        resultsDiv.innerText = transcript;
+
+        if (event.results[0].isFinal) {
+          // Any additional actions when the result is final
+        }
+      });
+    } else {
+      resultsDiv.innerText = "Web Speech API is not supported in this browser. Please use a supported browser.";
+    }
+
+    window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const studentIdFromUrl = urlParams.get('student_id');
+    const studentIdFromHidden = document.getElementById('student_id').value;
+
+    console.log('Student ID from hidden input:', studentIdFromHidden);
+    console.log('Student ID from URL:', studentIdFromUrl);
+
+    if (studentIdFromUrl) {
+        document.getElementById('student_id').value = studentIdFromUrl;
+    }
+
+    // Save student_id to session storage
+    sessionStorage.setItem('student_id', studentIdFromHidden);
+};
+
+</script>
+  <header>
+            <button onclick="goBack()" class="back-button">
+              <img src="{% static 'images/back-btn.png' %}" alt="Back" style="height: 7vh; width: 7vh;">
+              </button>
+              
+              <script>
+                function goBack() {
+                  window.location.href = 'dashboard_page.html'
+                }
+              </script>
+              
+                <img src="{% static 'images/sparkli.png' %}" height="110" style="position: relative; right: 4%;">
+                <a class="g2preoral">POSTTEST - GRADE 4 LEVEL ORAL READING</a>
+                <button class="home-btn" onclick="Dashboard()">Home</button>
+            <script>
+            function Dashboard() {
+                window.location.href = 'dashboard_page.html';
+            }
+            </script> 
+        </header> 
+</div>
+</body>
+</html>

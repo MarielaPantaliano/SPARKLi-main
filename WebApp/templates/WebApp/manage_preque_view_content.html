@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pretest Questions</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+        @font-face {
+            font-family: 'Blueberry';
+            src: url("{% static 'fonts/Blueberry .ttf' %}") format('truetype');
+        }
+    </style>
+</head>
+<body>
+    <img class="manage-contents-bg" src="{% static 'images/dashboard_bg.png' %}">
+
+
+    <button onclick="goBack()" class="manage-back-btn">
+        <img src="{% static 'images/back-btn.png' %}" alt="Back" height="50" width="50">
+    </button>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+   
+    <div class="table-contents-container">
+    <h1 class="manage-content-title">Pretest Questions - Grade {{ grade }}</h1>
+    <table class="manage-preques-table">
+        <thead>
+            <tr>
+                <th>Question</th>
+                <th>Passage</th>
+                <th>Update</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for question in questions %}
+            <tr>
+                <td>{{ question.pretest_question }}</td>
+                <td>{{ question.pretest_passage }}</td>
+                <td>
+                    <a href="{% url 'manage_preque_update_content' question.pk %}"><button id="up">Update</button></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
+
+
+
+
+

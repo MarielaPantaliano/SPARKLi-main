@@ -1,0 +1,138 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tag Rules!</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+    </style>
+    <style>
+        @font-face {
+            font-family: 'Blueberry';
+            src: url("{% static 'fonts/Blueberry .ttf' %}") format('truetype');
+        }
+    </style>
+    
+</head>
+<body>
+    <div class="background-tag">
+        <img src="{% static 'images/tag_rules_bg.jpg' %}" height="100%" width="100%">
+        <button onclick="goBack()" class="back-btn">
+            <img src="{% static 'images/back-btn.png' %}" alt="Back" height="55" width="55" >
+        </button>
+        <script>
+            function goBack() {
+            window.history.back();
+            }
+        </script>
+    <form id="tag_rules">
+        {% csrf_token %}
+        <div class="storyboard">
+            <h1 class="title-tag" name="title">Tag Rules!</h1>
+            <textarea class="storyboard_tag_rules" id="inputText" name="text" rows="9" cols="80" readonly>“You’re it!” Nicole shouted as she tapped me on the arm. I spotted Andy and charged after him. He veered to the right and I just missed him. Nicole was just past him, so I started chasing after her, but she shouted, “No tag backs!” “Yeah, there are! We didn’t make rules for this tag game, so I can tag you!” I said, out of breath as I ran toward her. “Then I’m not playing anymore,” replied Nicole. And just like that, our tag game was over. How annoying, I thought. Andy and I stopped to talk. “I guess this is one reason that people make rules for games,” said Andy. “We could still be playing if we had agreed on the rules with Nicole before we played.” “I guess,” I said, “but rules are boring. I just want to play!” I decided to try playing with someone else, without rules. I played football and tackled Liam, who hurt his arm. The other kids didn’t want to play football with me anymore.
+            </textarea><br>
+        </div>
+        <div class="wrapper-speed">
+            <label class="speed_label" for="speed">Adjust Speed:</label>
+            <input class="adjust-speed" type="range" id="speed" name="speed" min="0.7" max="1.2" step="0.1" value="1"><br>
+        </div>
+        <button class="text-to-speech" type="button" onclick="speakText()">
+            <img src="{% static 'images/speaker.png' %}" height="40" width="40">
+        </button>
+        <button class="stop-speech" type="button" onclick="stopSpeech()">
+            <img src="{% static 'images/stop_fill.png' %}" height="40" width="40">
+        </button>
+    </form>
+
+    <script>
+        var utterance = null;
+        var words = [];
+        var isFirstWordRead = false;
+        
+        function speakText() {
+            var formElement = document.getElementById('tag_rules');
+            var formData = new FormData(formElement);
+            var text = formData.get('text');
+            var title = 'Tag Rules!. ';
+            var fullText = title + text;
+            var speed = parseFloat(formData.get('speed'));
+            words = text.split(/\s+/);
+        
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+            }
+        
+            utterance = new SpeechSynthesisUtterance(fullText);
+            utterance.lang = 'en-PH';
+            utterance.volume = 1;
+            utterance.rate = speed;
+            utterance.pitch = 1;
+            utterance.voice = speechSynthesis.getVoices().find(function(voice) {
+                return voice.name === 'Angelo Online (Natural) - English Philippines (en-PH)'; 
+            });
+        
+            var index = 0;
+        
+            utterance.onboundary = function(event) {
+                if (event.name === 'word') {
+                    if (!isFirstWordRead && event.charIndex > title.length) {
+                        isFirstWordRead = true;
+                    }
+                    if (isFirstWordRead) {
+                        highlightWord(index);
+                        index++;
+                    }
+                }
+            };
+        
+            utterance.onend = function(event) {
+                removeHighlight();
+            };
+        
+            window.speechSynthesis.speak(utterance);
+        }
+        
+        function highlightWord(index) {
+            var textArea = document.getElementById('inputText');
+            var startPosition = getWordStartPosition(index);
+            var endPosition = getWordEndPosition(index);
+            textArea.setSelectionRange(startPosition, endPosition);
+            textArea.focus();
+        }
+        
+        function getWordStartPosition(index) {
+            var startPosition = 0;
+            for (var i = 0; i < index; i++) {
+                startPosition += words[i].length + 1; 
+            }
+            return startPosition;
+        }
+        
+        function getWordEndPosition(index) {
+            var endPosition = getWordStartPosition(index) + words[index].length;
+            return endPosition;
+        }
+
+        function removeHighlight() {
+            var textArea = document.getElementById('inputText');
+            textArea.setSelectionRange(0, 0); 
+        }
+        
+        function stopSpeech() {
+            if (utterance) {
+                window.speechSynthesis.cancel();
+                removeHighlight();
+            }
+        }
+        
+        </script>
+    </div>               
+</body>
+</html>

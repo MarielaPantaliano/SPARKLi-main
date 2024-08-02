@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Puzzle Phrase!</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/game_style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <script src="{% static 'js/music-player.js' %}"></script>
+
+
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+        @font-face {
+            font-family: 'More Sugar Regular';
+            src: url("{% static 'fonts/more-sugar.regular.ttf' %}") format('truetype');
+        }
+        @font-face {
+            font-family: 'More Sugar Thin';
+            src: url("{% static 'fonts/more-sugar.thin.ttf' %}") format('truetype');
+        }
+        .game-content {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-bg">
+        <img src="{% static 'images/game_images/index_game_bg.png' %}" height="99%" width="100%" style="position: fixed; top: 0; left: 0;">
+        <div class="box"></div>
+        <div class="txt-container">
+            <h2 class="head-title">MIND BLOOM GAMES</h2>
+        </div>
+        <div class="loader">
+            <div class="loader__circle"></div>
+            <div class="loader__circle"></div>
+            <div class="loader__circle"></div>
+            <div class="loader__circle"></div>
+        </div>
+        <div class="loading" id="loading">Game Loading...</div>
+
+
+        <audio id="game-bg-music" loop>
+            <source src="{% static 'sounds/game-bg-music.mp3' %}" type="audio/mpeg">
+        </audio>
+
+
+        <button id="toggle-music" class="toggle-music">
+            <img src="{% static 'images/speaker.png' %}" height="40" width="40">
+        </button>
+    </div>
+
+
+    <div class="game-bg game-content">
+        <img class="phead-title" src="{% static 'images/game_images/phead-title.png' %}">
+        <img class="puzzle" src="{% static 'images/game_images/puzzle.png' %}">
+        <img class="puzzle_game_bg1" src="{% static 'images/game_images/puzzle_game_bg1.png' %}">
+        <img class="puzzle_game_bg2" src="{% static 'images/game_images/puzzle_game_bg2.png' %}">
+        <img class="puzzle_game_bg3" src="{% static 'images/game_images/puzzle_game_bg3.png' %}">
+        <div class="p-box"></div>
+        <h4 class="p-ins">Fill in the missing letters to complete the phrase! <br> You can do it. Let’s go!</h4>
+        <button class="play-btn" onclick="shuffleAndPlay()">Play</button>
+       
+        <audio id="game-bg-music" loop>
+            <source src="{% static 'sounds/game-bg-music.mp3' %}" type="audio/mpeg">
+        </audio>
+       
+        <button id="toggle-music" class="toggle-music">
+            <img src="{% static 'images/speaker.png' %}" height="40" width="40">
+        </button>
+
+
+        <script>
+            const title = document.getElementById('loading');
+            let loadPercentage = 0;
+
+
+            const updateTitle = () => {
+                loadPercentage += 1;
+                title.textContent = `Game Loading... ${loadPercentage}%`;
+
+
+                if (loadPercentage < 100) {
+                    setTimeout(updateTitle, 100);
+                } else {
+                    title.textContent = 'Game Ready!';
+                    document.querySelector('.loader').style.display = 'none';
+                    document.querySelector('.loading').style.display = 'none';
+                    document.querySelector('.game-bg').style.display = 'none';
+                    document.querySelector('.game-content').style.display = 'block';
+                }
+            };
+
+
+            updateTitle();
+
+
+            function shuffleAndPlay() {
+                let pages = ['p-1.html', 'p-2.html', 'p-3.html', 'p-4.html', 'p-5.html', 'p-6.html', 'p-7.html', 'p-8.html', 'p-9.html', 'p-10.html', 'p-11.html', 'p-12.html', 'p-13.html', 'p-14.html', 'p-15.html'];
+                shuffleArray(pages);
+
+
+                let limitedPages = pages.slice(0, 5);
+                sessionStorage.setItem("pages", JSON.stringify(limitedPages));
+                sessionStorage.setItem("currentPageIndex", 0);
+                sessionStorage.setItem("correctAnswers", 0);
+
+
+                window.location.href = limitedPages[0];
+            }
+
+
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+        </script>
+    </div>
+</body>
+</html>
+
+
+
+
+

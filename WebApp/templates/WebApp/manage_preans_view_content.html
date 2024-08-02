@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Pretest Answers - Grade {{ grade }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+        @font-face {
+            font-family: 'Blueberry';
+            src: url("{% static 'fonts/Blueberry .ttf' %}") format('truetype');
+        }
+    </style>
+</head>
+<body>
+    <img class="manage-contents-bg" src="{% static 'images/dashboard_bg.png' %}">
+
+
+    <button onclick="goBack()" class="manage-back-btn">
+        <img src="{% static 'images/back-btn.png' %}" alt="Back" height="50" width="50">
+    </button>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+
+    <div class="table-contents-container">
+    <h1 class="manage-content-title">Manage Pretest Answers - Grade {{ grade }}</h1>
+    <table id="customers" border="1">
+        <thead>
+            <tr>
+                <th>Pretest Answers</th>
+                <th>Pretest Questions</th>
+                <th>Pretest Passage</th>
+                <th>Update</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for answer in answers %}
+            <tr>
+                <td>{{ answer.pretest_answer }}</td>
+                <td>{{ answer.pretest_question }}</td>
+                <td>{{ answer.pretest_passage }}</td>
+                <td>
+                    <a href="{% url 'manage_preans_update_content' answer.pk %}"><button id="up">Update</button></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</body>
+</html>
+
+
+
+
+

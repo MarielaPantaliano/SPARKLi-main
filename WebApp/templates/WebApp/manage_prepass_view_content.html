@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Pretest Passages - Grade {{ grade }}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+        @font-face {
+            font-family: 'Blueberry';
+            src: url("{% static 'fonts/Blueberry .ttf' %}") format('truetype');
+        }
+       
+    </style>
+</head>
+<body>
+    <img class="manage-contents-bg" src="{% static 'images/dashboard_bg.png' %}">
+
+
+    <button onclick="goBack()" class="manage-back-btn">
+        <img src="{% static 'images/back-btn.png' %}" alt="Back" height="50" width="50">
+    </button>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+
+
+
+    <div class="table-contents-container">
+    <h1 class="manage-content-title">Manage Pretest Passages - Grade {{ grade }}</h1>
+    <table id="customers" border="1">
+        <thead>
+            <th>Grade Level</th>
+            <th>Pretest Passage Title</th>
+            <th>Pretest Passage</th>
+            <th>Pretest Passage Prompt</th>
+            <th>Update</th>
+        </thead>
+        <tbody>
+            {% for passage in passages %}
+            <tr>
+                <td>{{ passage.pretest_grade_level }}</td>
+                <td>{{ passage.pretest_passage_title }}</td>
+                <td>{{ passage.pretest_passage }}</td>
+                <td>{{ passage.pretest_passage_prompt }}</td>
+                <td>
+                    <a href="{% url 'manage_prepass_update_content' passage.pk %}"><button id="up">Update</button></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
+
+
+
+
+

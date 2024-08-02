@@ -1,0 +1,144 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading is Fun!</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+    </style>
+    <style>
+        @font-face {
+            font-family: 'Blueberry';
+            src: url("{% static 'fonts/Blueberry .ttf' %}") format('truetype');
+        }
+    </style>
+    
+</head>
+<body>
+    <div class="background-read-page">
+        <div class="custom-shape-divider-top-1714411385">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M600,112.77C268.63,112.77,0,65.52,0,7.23V120H1200V7.23C1200,65.52,931.37,112.77,600,112.77Z" class="shape-fill"></path>
+            </svg>
+        </div>
+        <button onclick="goBack()" class="back-btn">
+            <img src="{% static 'images/back-btn.png' %}" alt="Back" height="55" width="55" >
+        </button>
+        <script>
+            function goBack() {
+            window.location.href = "dashboard_page.html";
+            }
+        </script>
+        <p class="reading">Reading is Fun! <br> Let's Read!</p>
+            <img src="{% static 'images/read-page-bg.png' %}" height="100%" width="100%">
+    <div class="container-wrapper">
+    <div class="container scroll-1">
+        <div class="card">
+          <div class="card__image">
+            <img src="{% static 'images/the-bee.png' %}" alt="">
+          </div>
+          <div class="card__content">
+              <span class="card__title">The Bee</span>
+              <div class="card__describe">
+                <button class="the-bee" onclick="Bee()">Read Me!</button>
+                <script>
+                function Bee() {
+                window.location.href = 'the_bee.html';
+                }
+            </script>
+              </div>
+          </div>
+        </div>
+        <div class="card__tag">
+            <div class="card__image__tag">
+                <img src="{% static 'images/tag-rules.png' %}" alt="">
+              </div>
+              <div class="card__content__tag">
+                  <span class="card__title__tag">Tag Rules!</span>
+                  <div class="card__describe__tag">
+                    <button class="tag-rules" onclick="Tag()">Read Me!</button>
+                    <script>
+                    function Tag() {
+                    window.location.href = 'tag_rules.html';
+                    }
+                </script>
+            </div>
+          </div>
+        </div>
+        <div class="card__habit">
+            <div class="card__image__habit">
+                <img src="{% static 'images/max-good-habit.png' %}" alt="">
+              </div>
+              <div class="card__content__habit">
+                  <span class="card__title__habit">Max's Good Habit</span>
+                  <div class="card__describe__habit">
+                    <button class="good-habit" onclick="GoodHabit()">Read Me!</button>
+                    <script>
+                    function GoodHabit() {
+                    window.location.href = 'max_good_habit.html';
+                    }
+                </script>
+            </div>
+          </div>
+        </div>
+        <div class="card__ocean">
+            <div class="card__image__ocean">
+                <img src="{% static 'images/ocean-waves.png' %}" alt="">
+              </div>
+              <div class="card__content__ocean">
+                  <span class="card__title__ocean">Why Does the Ocean Have Waves?</span>
+                  <div class="card__describe__ocean">
+                    <button class="ocean-waves" onclick="OceanWaves()">Read Me!</button>
+                    <script>
+                    function OceanWaves() {
+                    window.location.href = 'ocean_waves.html';
+                    }
+                </script>
+            </div>
+            </div>
+          </div>
+          <div class="card__rocks">
+            <div class="card__image__rocks">
+                <img src="{% static 'images/rocks.png' %}" alt="">
+              </div>
+              <div class="card__content__rocks">
+                  <span class="card__title__rocks">Rocks</span>
+                  <div class="card__describe__rocks">
+                    <button class="rocks" onclick="Rocks()">Read Me!</button>
+                    <script>
+                    function Rocks() {
+                    window.location.href = 'rocks.html';
+                    }
+                </script>
+            </div>
+            </div>
+          </div>
+          <div class="card__hero">
+            <div class="card__image__hero">
+                <img src="{% static 'images/civil-war-hero.png' %}" alt="">
+              </div>
+              <div class="card__content__hero">
+                  <span class="card__title__hero">Clara Barton: Civil War Hero</span>
+                  <div class="card__describe__hero">
+                    <button class="hero" onclick="Hero()">Read Me!</button>
+                    <script>
+                    function Hero() {
+                    window.location.href = 'civil_war_hero.html';
+                    }
+                </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

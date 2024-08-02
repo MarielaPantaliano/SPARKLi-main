@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Contents</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+        @font-face {
+            font-family: 'Blueberry';
+            src: url("{% static 'fonts/Blueberry .ttf' %}") format('truetype');
+        }
+    </style>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        #up, #del, #add {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #up:hover, #del:hover, #add:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <img class="bg" src="{% static 'images/dashboard_bg.png' %}">
+
+    <button onclick="goBack()" class="manage-back-btn">
+        <img src="{% static 'images/back-btn.png' %}" alt="Back" height="50" width="50">
+    </button>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+    <h2 class="manage-content-txt">Select Content to Edit</h2>
+
+    <div class="manage-contents-side-bar">
+        <h5 class="pretest-title">Pretest</h5>
+        <button class="manage-contents-title" onclick="handleClick('pretest', 'answers')">Pretest Answers</button>
+        <button class="manage-contents-title" onclick="handleClick('pretest', 'passages')">Pretest Passages</button>
+        <button class="manage-contents-title" onclick="handleClick('pretest', 'questions')">Pretest Questions</button>
+        <h5 class="posttest-title">Posttest</h5>
+        <button class="manage-contents-title2" onclick="handleClick('posttest', 'answers')">Posttest Answers</button>
+        <button class="manage-contents-title2" onclick="handleClick('posttest', 'passages')">Posttest Passages</button>
+        <button class="manage-contents-title2" onclick="handleClick('posttest', 'questions')">Posttest Questions</button>
+    </div>
+
+    <div id="content" class="hidden">
+        <div id="grade-buttons" class="grade-buttons hidden">
+            <button onclick="showEditArea(2)">Grade 2</button>
+            <button onclick="showEditArea(3)">Grade 3</button>
+            <button onclick="showEditArea(4)">Grade 4</button>
+        </div>
+        <div id="edit-area" class="edit-area hidden"></div>
+    </div>
+
+    <script>
+        function handleClick(testType, contentType) {
+            document.getElementById('content').classList.remove('hidden');
+            document.getElementById('grade-buttons').classList.remove('hidden');
+            document.getElementById('edit-area').classList.add('hidden');
+
+            window.currentTestType = testType;
+            window.currentContentType = contentType;
+        }
+
+        function showEditArea(grade_level) {
+            const editArea = document.getElementById('edit-area');
+            editArea.innerHTML = '';
+
+            const teacherId = "{{ teacher_id }}";
+
+            fetch(`/manage_edit_content/${window.currentTestType}/${window.currentContentType}/${grade_level}/${teacherId}/`)
+                .then(response => response.text())
+                .then(html => {
+                    editArea.innerHTML = html;
+                    document.getElementById('grade-buttons').classList.add('hidden');
+                    editArea.classList.remove('hidden');
+                });
+        }
+    </script>
+</body>
+</html>

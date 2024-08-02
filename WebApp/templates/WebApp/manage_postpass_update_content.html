@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Posttest Passage</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+        @font-face {
+            font-family: 'Blueberry';
+            src: url("{% static 'fonts/Blueberry .ttf' %}") format('truetype');
+        }
+        .manage-update {
+            width: 50vw;
+            height: 70vh;
+            margin-top: 15%;
+            margin: 30px auto;
+            padding: 110px 30px;
+            background: #e9eefb;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            z-index: 11111;
+            position: absolute;
+            border-radius: 40px;
+            top: 10%;
+            left: 28%;
+        }
+
+
+        .manage-update p {
+            font-size: 1rem;
+            text-align: center;
+        }
+
+
+        label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: inline;
+            line-height: 30px;
+            text-align: center;
+        }
+
+
+        input{
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            margin-top: 5%;
+            font-family: 'Comic Sans';
+            display: inline;
+            width: 19.5vw;
+            padding: 10px;
+        }
+        textarea {
+            width: calc(100% - 10px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            font-family: 'Comic Sans';
+            display: inline;
+            height: 15vh;
+
+
+        }
+
+
+        button[type="submit"] {
+        position: relative;
+        display: fixed;
+        left: 35%;
+        width: 10vw;
+        justify-content: center;
+        padding: 8px;
+        font-size: 0.8rem;
+        text-align: center;
+        font-family: 'Comic Sans';
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        border-radius: 30px;
+        background-color: #a7eba3;
+        transition: background-color 2s, color #2581c4 2s;
+        z-index: 1111;
+        box-shadow: 0 14px 28px rgba(0,0,0,0.20),
+                        0 10px 10px rgba(0,0,0,0.10);
+        margin: 20px;
+        }
+
+
+        .manage-cancel-btn{
+        position: absolute;
+        display: fixed;
+        justify-content: center;
+        background-color: rgb(244, 101, 101);
+        width: 10vw;
+        padding: 8px;
+        left: 39%;
+        top: 82%;
+        font-size: 0.8rem;
+        text-align: center;
+        font-family: 'Comic Sans';
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        border-radius: 30px;
+        transition: background-color 2s, color #2581c4 2s;
+        z-index: 1111;
+        color: white;
+        }
+    </style>
+</head>
+<body>
+    <img class="manage-contents-bg" src="{% static 'images/dashboard_bg.png' %}">
+
+
+    <button onclick="goBack()" class="manage-back-btn">
+        <img src="{% static 'images/back-btn.png' %}" alt="Back" height="50" width="50">
+    </button>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+
+
+   
+    <form class="manage-update" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+        <a class="manage-cancel-btn" href="{% url 'manage_postpass_view_content' passage.posttest_grade_level %}">Cancel</a>
+        <h1 class="manage-content-update-title">Update Posttest Passage</h1>
+    </form>
+</body>
+</html>
+
+
+
+
+

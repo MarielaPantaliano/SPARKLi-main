@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Analysis Result</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="{%static 'js/grade3_script.js'%}"></script>
+    <style>
+        @font-face {
+            font-family: 'Comic Sans';
+            src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
+        }
+        @font-face {
+            font-family: 'Blueberry';
+            src: url("{% static 'fonts/Blueberry .ttf' %}") format('truetype');
+        }
+    </style>
+</head>
+<body>
+    <div class="g3-background" style="overflow: hidden;">
+        <div class="custom-shape-divider-bottom-1712161624">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="shape-fill"></path>
+                <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" class="shape-fill"></path>
+                <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" class="shape-fill"></path>
+            </svg>
+        </div>
+        <div class="g2-container">
+            <div class="card3">
+                <p class="transcript"><strong>Reading Transcription:</strong> {{ transcript }}</p>
+                <p class="speed"><strong> Reading Speed (WPM): </strong> {{ reading_speed }} words per minute</p>
+            </div>
+        </div>
+        <div class="g3-container">
+            <div class="card4">
+                <p class="mistakes"><strong>Reading Mistakes:</strong></p>
+                <table class="mistakes-content">
+                    <thead>
+                        <tr>
+                            <th>Mistake Type</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody class="m-content">
+                        {% if 'Mispronunciation' in reading_mistakes %}
+                            <tr class="m-content">
+                                <td>Mispronunciation</td>
+                                <td id="mispronunciation-count">{{ reading_mistakes.Mispronunciation }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if 'Omission' in reading_mistakes %}
+                            <tr class="m-content">
+                                <td>Omission</td>
+                                <td id="omission-count">{{ reading_mistakes.Omission }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if 'Substitution' in reading_mistakes %}
+                            <tr class="m-content">
+                                <td>Substitution</td>
+                                <td id="substitution-count">{{ reading_mistakes.Substitution }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if 'Insertion' in reading_mistakes %}
+                            <tr class="m-content">
+                                <td>Insertion</td>
+                                <td id="insertion-count">{{ reading_mistakes.Insertion }}</td>
+                            </tr>
+                        {% endif %}
+                        <tr class="m-content">
+                            <td>Total Miscues</td>
+                            <td id="total-miscues">{{ total_miscues }}</td>
+                        </tr>
+                        <tr class="m-content">
+                            <td>Oral Reading Score</td>
+                            <td id="oral-reading-score">{{ oral_reading_score }}</td>
+                        </tr>
+                        <tr class="m-content">
+                            <td>Word Error Rate</td>
+                            <td id="oral-reading-score">{{ word_error_rate }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="mistake-btn" onclick="wordsMistakes()">Show Mistakes</button>
+            </div>
+        </div>
+     
+        <div id="popup" class="g3-pretest-popup" style="display: none;">
+            <div class="popup-content">
+                <p class="reading-results-content"><strong>Total Miscues:</strong> <span id="popup-total-miscues">{{ total_miscues }}</span></p>
+                <p class="reading-results-content"><strong>Oral Reading Score:</strong> <span id="popup-oral-reading-score">{{ oral_reading_score }}</span></p>
+            </div>
+                <button class="save-btn" onclick="saveData()">Save</button>
+                <button class="close-btn" onclick="closePopup()">Close</button>
+        </div>
+
+
+        <div id="mistakes-popup" class="g3-pretest-popup" style="display: none;">
+            <div class="mistake-content">
+                <h3 class="reading-results-txt">Word Mistakes</h3>
+       
+                {% if mispronunciation_words %}
+                    <h3 class="mistakes-type">Mispronunciation</h3>
+                    <table class="mistakes-list-content" id="mispronunciation-table">
+                        <thead>
+                            <tr>
+                                <th>Original</th>
+                                <th>Corrected</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for word_pair in mispronunciation_words %}
+                                <tr id="mispronunciation-{{ word_pair.0 }}-{{ word_pair.1 }}">
+                                    <td>{{ word_pair.0 }}</td>
+                                    <td>{{ word_pair.1 }}</td>
+                                    <td>
+                                        <button class="ignore-btn" onclick="ignoreMistake('Mispronunciation', '{{ word_pair.0 }}', '{{ word_pair.1 }}')">Ignore</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+       
+                {% if substitution_words %}
+                    <h3 class="mistakes-type">Substitution</h3>
+                    <table class="mistakes-list-content" id="substitution-table">
+                        <thead>
+                            <tr>
+                                <th>Original</th>
+                                <th>Substitute</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for word_pair in substitution_words %}
+                                <tr id="substitution-{{ word_pair.1 }}">
+                                    <td>{{ word_pair.0 }}</td>
+                                    <td>{{ word_pair.1 }}</td>
+                                    <td>
+                                        <button class="ignore-btn" onclick="ignoreMistake('Substitution', '{{ word_pair.0 }}', '{{ word_pair.1 }}')">Ignore</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+       
+                {% if omission_words %}
+                    <h3 class="mistakes-type">Omission</h3>
+                    <table class="mistakes-list-content" id="omission-table">
+                        <thead>
+                            <tr>
+                                <th>Omission</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for word in omission_words %}
+                                <tr id="omission-{{ word }}">
+                                    <td>{{ word }}</td>
+                                    <td>
+                                        <button class="ignore-btn" onclick="ignoreMistake('Omission', '{{ word }}')">Ignore</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+       
+                {% if insertion_words %}
+                    <h3 class="mistakes-type">Insertion</h3>
+                    <table class="mistakes-list-content" id="insertion-table">
+                        <thead>
+                            <tr>
+                                <th>Insertion</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for word in insertion_words %}
+                                <tr id="insertion-{{ word }}">
+                                    <td>{{ word }}</td>
+                                    <td>
+                                        <button class="ignore-btn" onclick="ignoreMistake('Insertion', '{{ word }}')">Ignore</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+       
+                <button class="save-changes-btn" onclick="saveChanges()">Save Changes</button>
+                <button class="close-btn" onclick="closeMistakesPopup()">Close</button>
+            </div>
+        </div>          
+
+
+    <header>
+            <button onclick="goBack()" class="back-button">
+                <img src="{% static 'images/back-btn.png' %}" alt="Back" style="height: 7vh; width: 7vh;">
+            </button>
+            <img src="{% static 'images/sparkli.png' %}" height="110" style="position: relative; right: 4%;">
+            <a class="result-title">Reading Analysis Result</a>
+            <button class="home" onclick="Dashboard()">Home</button>
+        </header>
+    </div>
+
+    <div id="custom-popup" class="analyze-alert-msg" style="display: none;">
+        <div class="analyze-alert-container">
+            <p id="custom-popup-message"></p>
+            <button onclick="saveData()" class="analyze-done-btn">Done</button>
+        </div>
+    </div>
+    
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+   
+        function Dashboard() {
+            window.location.href = 'dashboard_page.html';
+        }
+   
+        function showPopup() {
+            document.getElementById('popup').style.display = 'block';
+        }
+   
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
+   
+        function wordsMistakes() {
+            document.getElementById('mistakes-popup').style.display = 'block';
+        }
+   
+        function closeMistakesPopup() {
+            document.getElementById('mistakes-popup').style.display = 'none';
+        }
+   
+        function saveChanges() {
+            updateTotalMiscues();
+            let totalMiscues = document.getElementById('total-miscues').textContent;
+            let oralReadingScore = document.getElementById('oral-reading-score').textContent;
+            showCustomPopup(`<p style="color: red;"><strong><p></strong><strong>Total Miscues:</strong> ${totalMiscues}<br><strong>Oral Reading Score:</strong> ${oralReadingScore}`);
+            closeMistakesPopup();
+        }
+   
+        let ignoredMispronunciations = [];
+        let ignoredSubstitutions = [];
+        let ignoredOmissions = [];
+        let ignoredInsertions = [];
+   
+        function ignoreMistake(type, original, corrected) {
+            console.log('Ignoring mistake:', type, original, corrected);
+   
+            if (type === 'Mispronunciation' && original && corrected) {
+                ignoredMispronunciations.push({ original, corrected });
+                let element = document.getElementById(`mispronunciation-${original}-${corrected}`);
+                if (element) {
+                    element.remove();
+                } else {
+                    console.log('Element not found:', `mispronunciation-${original}-${corrected}`);
+                }
+                updateCount('mispronunciation-count', -1);
+            } else if (type === 'Substitution' && corrected) {
+                ignoredSubstitutions.push(corrected);
+                let element = document.getElementById(`substitution-${corrected}`);
+                if (element) {
+                    element.remove();
+                } else {
+                    console.log('Element not found:', `substitution-${corrected}`);
+                }
+                updateCount('substitution-count', -1);
+            } else if (type === 'Omission' && original) {
+                ignoredOmissions.push(original);
+                let element = document.getElementById(`omission-${original}`);
+                if (element) {
+                    element.remove();
+                } else {
+                    console.log('Element not found:', `omission-${original}`);
+                }
+                updateCount('omission-count', -1);
+            } else if (type === 'Insertion' && original) {
+                ignoredInsertions.push(original);
+                let element = document.getElementById(`insertion-${original}`);
+                if (element) {
+                    element.remove();
+                } else {
+                    console.log('Element not found:', `insertion-${original}`);
+                }
+                updateCount('insertion-count', -1);
+            } else {
+                console.log('Invalid parameters:', type, original, corrected);
+            }
+            updateTotalMiscues(); // Update total miscues and oral reading score in real-time
+        }
+   
+        function updateCount(id, value) {
+            let countElement = document.getElementById(id);
+            if (countElement) {
+                let currentCount = parseInt(countElement.textContent) || 0;
+                countElement.textContent = currentCount + value;
+            }
+        }
+   
+        function updateTotalMiscues() {
+            let mispronunciationCount = parseInt(document.getElementById('mispronunciation-count').textContent) || 0;
+            let substitutionCount = parseInt(document.getElementById('substitution-count').textContent) || 0;
+            let omissionCount = parseInt(document.getElementById('omission-count').textContent) || 0;
+            let insertionCount = parseInt(document.getElementById('insertion-count').textContent) || 0;
+            let totalMiscues = mispronunciationCount + substitutionCount + omissionCount + insertionCount;
+            document.getElementById('total-miscues').textContent = totalMiscues;
+            document.getElementById('popup-total-miscues').textContent = totalMiscues;
+   
+            let oralReadingScore = calculateOralReadingScore(totalMiscues);
+            document.getElementById('oral-reading-score').textContent = oralReadingScore;
+            document.getElementById('popup-oral-reading-score').textContent = oralReadingScore;
+        }
+   
+        function calculateOralReadingScore(totalMiscues) {
+            return 100 - totalMiscues * 2;
+        }
+   
+        function saveData() {
+            let totalMiscues = document.getElementById('total-miscues').textContent;
+            let oralReadingScore = document.getElementById('oral-reading-score').textContent;
+
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "save_reading_data" %}',
+                data: {
+                    'total_miscues': totalMiscues,
+                    'oral_reading_score': oralReadingScore,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert('Data saved successfully!');
+                        window.location.href = 'g3_preoral_questions.html';
+                    } else {
+                        alert('Error saving data: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('An error occurred while saving data.');
+                }
+            });
+        }
+   
+        function showCustomPopup(message) {
+            document.getElementById('custom-popup-message').innerHTML = message;
+            document.getElementById('custom-popup').style.display = 'block';
+        }
+   
+        function closeCustomPopup() {
+            document.getElementById('custom-popup').style.display = 'none';
+            window.location.href = 'g3_preoral_questions.html';
+        }
+    </script>
+   
+</body>
+</html>
