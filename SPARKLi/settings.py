@@ -10,7 +10,7 @@ if not os.path.exists(LOGS_DIR):
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-wj50k@jh-gl4(g=bzej-nhzn1s4!)%_-c9pw4*9ia@8irg(zs$')
 
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = ('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['sparkli-main.onrender.com']
 
@@ -65,10 +65,22 @@ TEMPLATES = [
     },
 ]
 
+# Database
+# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+
 DATABASES = {
-    'default': dj_database_url.config(default='sqlite:///mydatabase.db')
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('DB_NAME', 'sparkli'),
+        'USER': os.getenv('DB_USER', 'root'),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '3306'),
+    }
 }
 
+# Password validation
+# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 AUTH_USER_MODEL = 'WebApp.Teacherrecords'
 
 AUTH_PASSWORD_VALIDATORS = [
