@@ -17,7 +17,8 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-wj50k@jh-gl4(g=bzej
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # Allowed hosts for the application
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'sparkli-main.onrender.com').split(',')
+
 
 # Installed applications
 INSTALLED_APPS = [
