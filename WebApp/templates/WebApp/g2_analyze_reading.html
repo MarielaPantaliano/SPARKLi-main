@@ -32,6 +32,9 @@
         <div class="g2-container">
             <div class="card3">
                 <p class="transcript"><strong>Reading Transcription:</strong> {{ transcript }}</p>
+                <p class="transcript" style="padding-top: 250px;" id="start-time"></p>
+                <p class="transcript" style="padding-top: 270px;" id="end-time"></p>
+                <p class="transcript" style="padding-top: 290px;" id="duration"></p>
                 <p class="speed"><strong> Reading Speed (WPM): </strong> {{ reading_speed }} words per minute</p>
             </div>
         </div>
@@ -361,6 +364,8 @@
             document.getElementById('custom-popup').style.display = 'none';
             window.location.href = 'g2_preoral_questions.html';
         }
+
+        
     </script>  
 </body>
 </html>

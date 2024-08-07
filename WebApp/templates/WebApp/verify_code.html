@@ -34,6 +34,16 @@
         <img src="{% static 'images/sparkli.png' %}" height="180">
         </div>
 
+        {% if messages %}
+        <div class="signup-messages">
+            <ul>
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
         <div class="signup-verify-container">
             <h3 class="signup-verify-txt">Enter Verification Code</h3>
             <h5 class="signup-verify-txt2">sent to your email</h5>

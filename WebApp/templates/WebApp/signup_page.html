@@ -13,12 +13,10 @@
             src: url("{% static 'fonts/COMICSANS.TTF' %}") format('truetype');
         }
 
-
         @font-face {
             font-family: 'Blueberry';
             src: url("{% static 'fonts/Blueberry .ttf' %}") format('truetype');
         }
-
 
         .eye-icon {
             position: absolute;
@@ -29,11 +27,9 @@
             opacity: 0.7;
         }
 
-
         .eye-icon:hover {
             opacity: 1;
         }
-
 
         .input2 {
             position: relative;
@@ -54,10 +50,9 @@
         </button>
         <script>
             function goBack() {
-            window.history.back();
+                window.location.href = 'login_page.html';
             }
         </script>
-
 
         <div class="sparkli_signup">
             <img src="{% static 'images/sparkli.png' %}" height="300">
@@ -73,99 +68,157 @@
                 </div>
             {% endif %}
 
-
         <div class="input-container">
             <div class="card2">
 
-
                 <h2 class="signup_title">SIGN UP</h2>
 
-
                 <div class="input2-container-signup">
-                <form autocomplete="off" action="" method="POST">
+                <form id="signupForm" autocomplete="off" action="" method="POST">
                     {% csrf_token %}
                 <div class="input2">
-                    <input class="fName" type="text" name="id" id="id" value="{{ id|default_if_none:'' }}" required autocomplete="off">
-                    <label for="">Teacher's ID:</label>
+                    <input class="fName" type="text" name="id" id="id" value="{{ id|default_if_none:'' }}" required autocomplete="off" pattern="\d{7}" maxlength="7">
+                    <label for="id">Enter Teacher's 7 digit ID:</label>
                 </div>
 
-
                 <div class="input2">
-                    <input class="fName" type="text" name="name" value="{{ name|default_if_none:'' }}" id="name" required autocomplete="off">
-                    <label for="">First Name:</label>
+                    <input class="fName" type="text" name="name" value="{{ name|default_if_none:'' }}" id="name" required autocomplete="off" maxlength="30" pattern="[A-Za-z ]+">
+                    <label for="name">First Name:</label>
+                </div>
+                
+                <div class="input2">
+                    <input class="lName" type="text" name="username" id="username" value="{{ username|default_if_none:'' }}" required autocomplete="off" maxlength="30" pattern="[A-Za-z ]+">
+                    <label for="username">Last Name:</label>
                 </div>
 
-
                 <div class="input2">
-                    <input class="lNAme" type="text" name="username" id="username" value="{{ username|default_if_none:'' }}" required autocomplete="off">
-                    <label for="">Last Name:</label>
+                    <input class="signup-email" type="email" name="email" id="email" value="{{ email|default_if_none:'' }}" required autocomplete="off" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50">
+                    <label for="email">Email:</label>
                 </div>
 
-
                 <div class="input2">
-                    <input class="signup-email" type="email" name="email" id="email" value="{{ email|default_if_none:'' }}" required autocomplete="off">
-                    <label for="">Email:</label>
-                </div>
-
-
-                <div class="input2">
-                    <input class="signup-password" type="password" name="password" id="password" required autocomplete="off">
-                    <label for="">Password:</label>
+                    <input class="signup-password" type="password" name="password" id="password" required autocomplete="off" maxlength="50">
+                    <label for="password">Password:</label>
                     <span class="signup-eye-icon" onclick="togglePasswordVisibility('password')">
                         <img src="{% static 'images/eye-icon.png' %}" alt="Show Password" id="password-eye-icon" height="20" width="20">
                     </span>
                 </div>
 
-
                 <div class="input2">
-                    <input class="signup-password" type="password" name="password1" id="password1" required autocomplete="off">
-                    <label for="">Confirm Password:</label>
+                    <input class="signup-password" type="password" name="password1" id="password1" required autocomplete="off" maxlength="40">
+                    <label for="password1">Confirm Password:</label>
                     <span class="signup-eye-icon" onclick="togglePasswordVisibility('password1')">
                         <img src="{% static 'images/eye-icon.png' %}" alt="Show Password" id="password1-eye-icon" height="20" width="20">
                     </span>
                 </div>
             </div>
 
-
                 <audio id="clickSound">
                 <source src="{% static 'sounds/click_sound.mp3' %}" type="audio/mpeg">
                 </audio>
 
-
-                <button class="signup_button" onclick="playClickSound()">Signup</button>
-
-
-                <script>
-                    function playClickSound() {
-                        var audio = document.getElementById("clickSound");
-                        audio.play();  
-                        setTimeout(function() {
-                        }, audio.duration * 1000);
-                    }
-
-
-                    function togglePasswordVisibility(id) {
-                        var passwordField = document.getElementById(id);
-                        var eyeIcon = document.querySelector(`#${id}-eye-icon`);
-                        if (passwordField.type === "password") {
-                            passwordField.type = "text";
-                            eyeIcon.src = "{% static 'images/hide-eye-icon.png' %}";
-                            eyeIcon.alt = "Hide Password";
-                        } else {
-                            passwordField.type = "password";
-                            eyeIcon.src = "{% static 'images/eye-icon.png' %}";
-                            eyeIcon.alt = "Show Password";
-                        }
-                    }
-                </script>
+                <button class="signup_button" type="submit" onclick="playClickSound()">Signup</button>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        let valid = true;
+
+        const idField = document.getElementById('id');
+        const nameField = document.getElementById('name');
+        const usernameField = document.getElementById('username');
+        const emailField = document.getElementById('email');
+        const passwordField = document.getElementById('password');
+        const password1Field = document.getElementById('password1');
+
+        if (!/^\d{7}$/.test(idField.value)) {
+            valid = false;
+            idField.setCustomValidity("Teacher's ID must be exactly 7 digits.");
+        } else {
+            idField.setCustomValidity('');
+        }
+
+        if (!/^[A-Za-z ]+$/.test(nameField.value) || nameField.value.length > 30) {
+            valid = false;
+            nameField.setCustomValidity("First Name must contain only letters and spaces, and be no longer than 30 characters.");
+        } else {
+            nameField.setCustomValidity('');
+        }
+
+        if (!/^[A-Za-z ]+$/.test(usernameField.value) || usernameField.value.length > 30) {
+            valid = false;
+            usernameField.setCustomValidity("Last Name must contain only letters and spaces, and be no longer than 30 characters.");
+        } else {
+            usernameField.setCustomValidity('');
+        }
+
+        if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(emailField.value) || emailField.value.length > 50) {
+            valid = false;
+            emailField.setCustomValidity("Email must be a valid email address and no longer than 50 characters.");
+        } else {
+            emailField.setCustomValidity('');
+        }
+
+        if (passwordField.value !== password1Field.value) {
+            valid = false;
+            password1Field.setCustomValidity("Passwords do not match.");
+        } else {
+            password1Field.setCustomValidity('');
+        }
+
+        if (valid) {
+            this.submit();
+        } else {
+            [...document.querySelectorAll('input')].forEach(input => input.reportValidity());
+        }
+    });
+
+    document.getElementById('id').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '').slice(0, 7);
+        e.target.value = value;
+    });
+
+    document.getElementById('name').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/[^A-Za-z ]/g, '').slice(0, 30);
+        e.target.value = value;
+    });
+
+    document.getElementById('username').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/[^A-Za-z ]/g, '').slice(0, 30);
+        e.target.value = value;
+    });
+
+    function playClickSound() {
+        var audio = document.getElementById("clickSound");
+        audio.play();
+        setTimeout(function() {}, audio.duration * 1000);
+    }
+
+    function togglePasswordVisibility(passwordId, eyeIconId) {
+        const passwordField = document.getElementById(passwordId);
+        const eyeIcon = document.getElementById(eyeIconId);
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            eyeIcon.src = "{% static 'images/eye-slash-icon.png' %}";
+        } else {
+            passwordField.type = "password";
+            eyeIcon.src = "{% static 'images/eye-icon.png' %}";
+        }
+    }
+
+    document.getElementById('password1').addEventListener('input', function() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('password1').value;
+        if (password !== confirmPassword) {
+            document.getElementById('password1').setCustomValidity("Passwords do not match.");
+        } else {
+            document.getElementById('password1').setCustomValidity('');
+        }
+    });
+</script>
 </body>
 </html>
-
-
-
-
-

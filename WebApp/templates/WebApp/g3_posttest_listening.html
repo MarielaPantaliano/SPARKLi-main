@@ -75,7 +75,8 @@
         <button class="next-btn-str5" onclick="Next()">Proceed to Questions...</button>
         <script>
             function Next(){
-                window.location.href = 'g3_postoral_questions.html'; 
+                const student_id = document.getElementById('student_id').value;
+                window.location.href = `g3_postoral_questions.html?student_id=${student_id}`;
             }
         </script>
     
@@ -155,7 +156,19 @@
             var fullText = words.map((wordObj) => `<span data-start="${wordObj.start}">${wordObj.word}</span>`).join(' ');
             textElement.innerHTML = fullText;
         }
+        document.addEventListener("DOMContentLoaded", function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const studentId = urlParams.get('student_id');
+                if (studentId) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.id = 'student_id';
+                    input.value = studentId;
+                    document.body.appendChild(input);
+                }
+            });
     </script>
+
 </div>
 </body>
 </html>

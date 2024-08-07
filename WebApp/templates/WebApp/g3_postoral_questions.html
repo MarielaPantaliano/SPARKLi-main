@@ -19,6 +19,9 @@
           font-family: 'Blueberry';
           src: url("{% static 'fonts/Blueberry .ttf' %}") format('truetype');
       }
+      .stud{
+        color: #fff2e1;
+      }
   </style>
 
 <body>
@@ -41,7 +44,7 @@
             </script>
 
 <input type="hidden" id="student_id" name="student_id" value="{{ student_id|default:'' }}">
-<p>Student ID: {{ student_id|default:"Not provided" }}</p>
+<p class="stud">Student ID: {{ student_id|default:"Not provided" }}</p>
 
 
         <h2 class="title-question">Questionnaire</h2>
@@ -99,6 +102,36 @@
         window.location.href = '/g3_posttest_summary.html';
       }
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+    // Replace these with the actual values from the server
+    const startTimeStr = "{{ start_time_str }}"; // ISO 8601 format string
+    const endTimeStr = "{{ end_time_str }}"; // ISO 8601 format string
+
+
+    function convertTimeToSeconds(isoStart, isoEnd) {
+        const startTime = (new Date(isoStart).getTime() / 1000).toFixed(2);
+        const endTime = (new Date(isoEnd).getTime() / 1000).toFixed(2);
+        const duration = (endTime - startTime).toFixed(2);
+        return {
+            startTime: parseFloat(startTime).toFixed(2),
+            endTime: parseFloat(endTime).toFixed(2),
+            duration: parseFloat(duration).toFixed(2)
+        };
+    }
+
+
+    if (startTimeStr && endTimeStr) {
+        const times = convertTimeToSeconds(startTimeStr, endTimeStr);
+
+
+        document.getElementById('start-time').textContent = `Start Time: ${times.startTime} secs`;
+        document.getElementById('end-time').textContent = `End Time: ${times.endTime} secs`;
+        document.getElementById('duration').textContent = `Duration: ${times.duration} secs`;
+    } else {
+        console.error('Start time or end time is missing.');
+    }
+});
 </script>
 </body>
 </html>

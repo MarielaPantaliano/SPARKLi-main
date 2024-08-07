@@ -82,14 +82,20 @@ def error_500(request):
 
 
 def index(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard_view')
+
     context = {}
     return render(request, "WebApp/index.html", context)
 
 
 MAX_LOGIN_ATTEMPTS = 3
-
+logger = logging.getLogger(__name__)
 
 def login_page(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard_view')
+    
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -154,10 +160,9 @@ def login_page(request):
         return render(request, "WebApp/login_page.html")
 
 
-
-
 def logout_view(request):
     logout(request)
+    request.session['is_logged_in'] = False
     return redirect('login_page')
 
 
@@ -173,6 +178,7 @@ def about_page(request):
 
 @login_required
 def dashboard_view(request):
+    request.session['is_logged_in'] = True
     teacher = request.user
     students = Studentrecords.objects.filter(teacher=teacher)
     return render(request, 'WebApp/dashboard_page.html', {'students': students, 'teacher': teacher})
@@ -226,10 +232,12 @@ def student_records_view(request):
     students = Studentrecords.objects.all()
     return render(request, 'WebApp/dashboard_page.html', {'students': students})
 
-
-
+logger = logging.getLogger(__name__)
 
 def signup_page(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard_view')
+
     if request.method == "POST":
         id = request.POST.get('id')
         username = request.POST.get('username')
@@ -238,56 +246,50 @@ def signup_page(request):
         password = request.POST.get('password')
         password1 = request.POST.get('password1')
 
-
         # Validate user input
         if not id.isdigit() or len(id) != 7:
             messages.error(request, "Teacher's ID must be exactly 7 digits.")
-            return redirect('signup_page')
-       
+            return render(request, 'WebApp/signup_page.html', {'id': id, 'username': username, 'name': name, 'email': email})
+
         if len(username) > 30:
             messages.error(request, "Last Name must be 30 characters or less.")
-            return redirect('signup_page')
-       
+            return render(request, 'WebApp/signup_page.html', {'id': id, 'username': username, 'name': name, 'email': email})
+
         if len(name) > 30:
-            messages.error(request, " First Name must be 30 characters or less.")
-            return redirect('signup_page')
-       
+            messages.error(request, "First Name must be 30 characters or less.")
+            return render(request, 'WebApp/signup_page.html', {'id': id, 'username': username, 'name': name, 'email': email})
+
         email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
         if not re.match(email_regex, email):
             messages.error(request, "Invalid email format.")
-            return redirect('signup_page')
-
+            return render(request, 'WebApp/signup_page.html', {'id': id, 'username': username, 'name': name, 'email': email})
 
         if len(password) < 8 or len(password) > 16:
             messages.error(request, "Password must be between 8 and 16 characters long.")
-            return redirect('signup_page')
-       
+            return render(request, 'WebApp/signup_page.html', {'id': id, 'username': username, 'name': name, 'email': email})
+
         if not re.search(r'\d', password):
             messages.error(request, "Password must contain at least one digit.")
-            return redirect('signup_page')
-
+            return render(request, 'WebApp/signup_page.html', {'id': id, 'username': username, 'name': name, 'email': email})
 
         if not re.search(r'[A-Za-z]', password):
             messages.error(request, "Password must contain at least one letter.")
-            return redirect('signup_page')
-       
+            return render(request, 'WebApp/signup_page.html', {'id': id, 'username': username, 'name': name, 'email': email})
+
         if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
             messages.error(request, "Password must contain at least one special character.")
-            return redirect('signup_page')
-
+            return render(request, 'WebApp/signup_page.html', {'id': id, 'username': username, 'name': name, 'email': email})
 
         if password != password1:
             messages.error(request, "Passwords don't match.")
-            return redirect('signup_page')
-       
+            return render(request, 'WebApp/signup_page.html', {'id': id, 'username': username, 'name': name, 'email': email})
+
         if Teacherrecordss.objects.filter(email=email).exists():
             messages.error(request, "Email already exists.")
-            return redirect('signup_page')
-
+            return render(request, 'WebApp/signup_page.html', {'id': id, 'username': username, 'name': name, 'email': email})
 
         # Generate OTP
         otp = generate_otp()
-
 
         # Store user information and OTP in session
         request.session['signup_data'] = {
@@ -300,13 +302,11 @@ def signup_page(request):
         request.session['otp'] = otp
         request.session['otp_expiry'] = (timezone.now() + timezone.timedelta(minutes=10)).isoformat()
 
-
         # Render email template
         try:
             html_message = render_to_string('WebApp/otp_email.html', {'name': name, 'otp': otp})
             plain_message = strip_tags(html_message)
             subject = 'SPARKLI | Verify OTP'
-
 
             # Create email
             email_message = EmailMultiAlternatives(
@@ -318,26 +318,23 @@ def signup_page(request):
             email_message.attach_alternative(html_message, "text/html")
             email_message.send()
 
-
             logger.info(f"OTP email sent to {email}")
-
 
         except Exception as e:
             logger.error(f"Failed to send OTP email: {e}")
             messages.error(request, "Failed to send OTP email. Please try again.")
-            return redirect('signup_page')
-
+            return render(request, 'WebApp/signup_page.html', {'id': id, 'username': username, 'name': name, 'email': email})
 
         # Redirect to OTP verification page
         return redirect('verify_code')
 
-
     return render(request, 'WebApp/signup_page.html')
 
 
-
-
 def verify_code(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard_view')
+
     if request.method == "POST":
         otp1 = request.POST.get('otp1')
         otp2 = request.POST.get('otp2')
@@ -346,21 +343,17 @@ def verify_code(request):
         otp5 = request.POST.get('otp5')
         otp6 = request.POST.get('otp6')
 
-
         # Combine OTP input fields
         otp = otp1 + otp2 + otp3 + otp4 + otp5 + otp6
-
 
         # Retrieve OTP and user data from session
         session_otp = request.session.get('otp')
         signup_data = request.session.get('signup_data')
         otp_expiry_str = request.session.get('otp_expiry')
 
-
         if not signup_data or not otp_expiry_str:
             messages.error(request, "OTP data missing or expired.")
             return redirect('signup_page')
-
 
         try:
             otp_expiry = datetime.fromisoformat(otp_expiry_str).astimezone(pytz.utc)
@@ -368,11 +361,9 @@ def verify_code(request):
             messages.error(request, "OTP expiry date is invalid.")
             return redirect('signup_page')
 
-
         if timezone.now() > otp_expiry:
             messages.error(request, "OTP expired.")
             return redirect('signup_page')
-
 
         if otp == session_otp:
             # OTP is correct; create the user and clear OTP from session
@@ -395,7 +386,6 @@ def verify_code(request):
             messages.error(request, "Invalid OTP.")
             return redirect('verify_code')
 
-
     return render(request, 'WebApp/verify_code.html')
 
 def input_student_info(request):
@@ -407,36 +397,42 @@ def input_student_info(request):
         gradelevel = request.POST.get('gradelevel')
         assessment = request.POST.get('assessment')
 
-
-        # Name validation
         if not re.match(r'^[a-zA-Z\s]{1,50}$', name):
             if len(name) > 50:
                 messages.error(request, "Name must be less than 50 characters long.")
             else:
-                messages.error(request, "Name contains invalid characters. Sorry, only letters (a-z) are allowed.")
-            return redirect('/input_student_info.html')
-       
-        # Age validation
-        if not age.isdigit() or not (1 <= int(age) <= 50):
-            messages.error(request, "Age must be less than 50.")
-            return redirect('/input_student_info.html')
-       
-        # Grade and section validation
+                messages.error(request, "Name contains invalid characters. Only letters are allowed.")
+            return render(request, 'WebApp/input_student_info.html', {
+                'name': name, 'age': age, 'gradesection': gradesection, 'date': date, 'gradelevel': gradelevel, 'assessment': assessment
+            })
+
+        if not age.isdigit() or not (5 <= int(age) <= 99):
+            messages.error(request, "Age must be between 5 and 99.")
+            return render(request, 'WebApp/input_student_info.html', {
+                'name': name, 'age': age, 'gradesection': gradesection, 'date': date, 'gradelevel': gradelevel, 'assessment': assessment
+            })
+
         if not re.match(r'^\d+\s*-\s*[a-zA-Z\s]+$', gradesection.strip()):
-            messages.error(request, "Grade and section must be in the format 'number - letters' (e.g., '2 - Rizal' or '2-Rizal').")
-            return redirect('/input_student_info.html')
-       
-         # Date validation
+            messages.error(request, "Grade and section must be in the format 'number - letters' (e.g., '2 - Rizal').")
+            return render(request, 'WebApp/input_student_info.html', {
+                'name': name, 'age': age, 'gradesection': gradesection, 'date': date, 'gradelevel': gradelevel, 'assessment': assessment
+            })
+
         today = timezone.now().date()
-        if not date or date != str(today):
-            messages.error(request, "Pretest date must be today's date only.")
-            return redirect('/input_student_info.html')
-
-
-
+        try:
+            input_date = timezone.datetime.strptime(date, "%Y-%m-%d").date()
+            if input_date != today:
+                messages.error(request, "Pretest date must be today's date only.")
+                return render(request, 'WebApp/input_student_info.html', {
+                    'name': name, 'age': age, 'gradesection': gradesection, 'date': date, 'gradelevel': gradelevel, 'assessment': assessment
+                })
+        except ValueError:
+            messages.error(request, "Invalid date format. Use YYYY-MM-DD.")
+            return render(request, 'WebApp/input_student_info.html', {
+                'name': name, 'age': age, 'gradesection': gradesection, 'date': date, 'gradelevel': gradelevel, 'assessment': assessment
+            })
 
         teacher = request.user
-
 
         new_student = Studentrecords.objects.create(
             teacher=teacher,
@@ -447,11 +443,7 @@ def input_student_info(request):
             gradelevel=gradelevel,
             assessment=assessment
         )
-        print('New student created:', new_student)
-
-
         request.session['student_id'] = new_student.id
-
 
         if gradelevel == 'grade 2':
             if assessment == 'Oral Reading':
@@ -470,7 +462,6 @@ def input_student_info(request):
                 return redirect('g4_pretest_listening')
         else:
             return redirect('/ReadReadRead.html')
-
 
     return render(request, "WebApp/input_student_info.html")
 
@@ -584,6 +575,8 @@ def g2_pretest_oral(request):
                 'reading_mistakes': reading_mistakes,
                 'reading_speed': reading_speed,
                 'word_error_rate': word_error_rate,
+                'start_time_str': start_time_str,
+                'end_time_str': end_time_str,
                 'mispronunciation_words': reading_mistakes.get('Mispronunciation Words', []),
                 'omission_words': reading_mistakes.get('Omission Words', []),
                 'substitution_words': reading_mistakes.get('Substitution Words', []),
@@ -762,6 +755,8 @@ def g3_pretest_oral(request):
                 'reading_mistakes': reading_mistakes,
                 'reading_speed': reading_speed,
                 'word_error_rate': word_error_rate,
+                'start_time_str': start_time_str,
+                'end_time_str': end_time_str,
                 'mispronunciation_words': reading_mistakes.get('Mispronunciation Words', []),
                 'omission_words': reading_mistakes.get('Omission Words', []),
                 'substitution_words': reading_mistakes.get('Substitution Words', []),
@@ -899,6 +894,8 @@ def g4_pretest_oral(request):
                 'reading_mistakes': reading_mistakes,
                 'reading_speed': reading_speed,
                 'word_error_rate': word_error_rate,
+                'start_time_str': start_time_str,
+                'end_time_str': end_time_str,
                 'mispronunciation_words': reading_mistakes.get('Mispronunciation Words', []),
                 'omission_words': reading_mistakes.get('Omission Words', []),
                 'substitution_words': reading_mistakes.get('Substitution Words', []),
@@ -1055,13 +1052,15 @@ def g2_posttest_oral(request):
                 'reading_mistakes': reading_mistakes,
                 'reading_speed': reading_speed,
                 'word_error_rate': word_error_rate,
+                'start_time_str': start_time_str,
+                'end_time_str': end_time_str,
                 'mispronunciation_words': reading_mistakes.get('Mispronunciation Words', []),
                 'omission_words': reading_mistakes.get('Omission Words', []),
                 'substitution_words': reading_mistakes.get('Substitution Words', []),
                 'insertion_words': reading_mistakes.get('Insertion Words', []),
-                'total_miscues': post_total_miscues,
-                'oral_reading_score': post_oral_reading_score,
-                'student_id': student_id,  
+                'total_miscues': reading_mistakes.get('Total Miscues', 0),
+                'oral_reading_score': reading_mistakes.get('Oral Reading Score', 0),
+                'student_id':student_id,
 
             }
 
@@ -1213,13 +1212,16 @@ def g3_posttest_oral(request):
                 'reading_mistakes': reading_mistakes,
                 'reading_speed': reading_speed,
                 'word_error_rate': word_error_rate,
+                'start_time_str': start_time_str,
+                'end_time_str': end_time_str,
                 'mispronunciation_words': reading_mistakes.get('Mispronunciation Words', []),
                 'omission_words': reading_mistakes.get('Omission Words', []),
                 'substitution_words': reading_mistakes.get('Substitution Words', []),
                 'insertion_words': reading_mistakes.get('Insertion Words', []),
-                'total_miscues': post_total_miscues,
-                'oral_reading_score': post_oral_reading_score,
-                'student_id': student_id,  
+                'total_miscues': reading_mistakes.get('Total Miscues', 0),
+                'oral_reading_score': reading_mistakes.get('Oral Reading Score', 0),
+                'student_id':student_id,
+
 
             }
 
@@ -1372,13 +1374,16 @@ def g4_posttest_oral(request):
                 'reading_mistakes': reading_mistakes,
                 'reading_speed': reading_speed,
                 'word_error_rate': word_error_rate,
+                'start_time_str': start_time_str,
+                'end_time_str': end_time_str,
                 'mispronunciation_words': reading_mistakes.get('Mispronunciation Words', []),
                 'omission_words': reading_mistakes.get('Omission Words', []),
                 'substitution_words': reading_mistakes.get('Substitution Words', []),
                 'insertion_words': reading_mistakes.get('Insertion Words', []),
-                'total_miscues': post_total_miscues,
-                'oral_reading_score': post_oral_reading_score,
-                'student_id': student_id,  
+                'total_miscues': reading_mistakes.get('Total Miscues', 0),
+                'oral_reading_score': reading_mistakes.get('Oral Reading Score', 0),
+                'student_id':student_id,
+
 
             }
 
@@ -1455,10 +1460,13 @@ def g4_postoral_questions(request):
 
 @login_required
 def g4_posttest_summary(request):
+    student_id = request.GET.get('student_id')
     teacher = request.user
     questions = PostTestQuestions.objects.filter(posttest_grade_level=44, teacher=teacher)
     context = {
-        'questions': questions
+        'questions': questions,
+        'student': student_id
+
     }
     return render(request, "WebApp/g4_posttest_summary.html", context)
 
@@ -2357,56 +2365,85 @@ def puzzle_p14(request):
 def puzzle_p15(request):
     return render(request, 'WebApp/p-15.html')
 
-
-
-
-
 nlp = spacy.load('en_core_web_md')
 
 def preprocess_answer(answer):
     return re.sub(r'[^\w\s]', '', answer).lower()
 
-def calculate_literal_similarity(user_answer, expected_answer, comparison_results, key):
-    expected_doc = nlp(preprocess_answer(','.join(expected_answer)))
-    user_doc = nlp(preprocess_answer(user_answer))
+from collections import Counter
+def get_pos_tags(doc):
+    return [token.pos_ for token in doc]
 
-    word_embeddings_similarity = user_doc.similarity(expected_doc)
+def get_pos_tags(doc):
+    return [token.pos_ for token in doc]
+
+def calculate_pos_similarity(user_doc, expected_doc):
+    user_pos_tags = get_pos_tags(user_doc)
+    expected_pos_tags = get_pos_tags(expected_doc)
+
+    user_pos_count = Counter(user_pos_tags)
+    expected_pos_count = Counter(expected_pos_tags)
+
+    common_tags = user_pos_count & expected_pos_count
+    total_common = sum(common_tags.values())
     
-    # Adjust tokenization ratios to focus on date format
-    tokenization_ratios = [
-        fuzz.token_sort_ratio(
-            preprocess_answer(user_answer),
-            preprocess_answer(expected_token)
-        ) / 100.0
-        if expected_token.isdigit() else 0.0
-        for expected_token in expected_answer
-    ]
+    total_user_tags = sum(user_pos_count.values())
+    total_expected_tags = sum(expected_pos_count.values())
+
+    if total_user_tags == 0 or total_expected_tags == 0:
+        return 0.0
+
+    pos_similarity = (2 * total_common) / (total_user_tags + total_expected_tags)
     
-    pos_tag_similarity = calculate_pos_similarity(user_doc, expected_doc)  # Define your own POS similarity function if needed
+    return pos_similarity
+
+def calculate_literal_similarity(user_answer, expected_answer, comparison_results, key):
+    # Preprocess the answers
+    expected_answer_str = ' '.join(expected_answer)
+    expected_answer_str_preprocessed = preprocess_answer(expected_answer_str)
+    user_answer_preprocessed = preprocess_answer(user_answer)
     
-    max_word_embeddings_similarity = max([word_embeddings_similarity])
-    max_tokenization_ratio = max(tokenization_ratios)
-    
-    exact_match = preprocess_answer(user_answer) == preprocess_answer(','.join(expected_answer))
-    
-    if any(preprocess_answer(expected).lower() in preprocess_answer(user_answer).lower() for expected in expected_answer) or exact_match:
+    # Exact match check
+    if user_answer_preprocessed == expected_answer_str_preprocessed:
+        result = "Correct"
         combined_similarity = 1.0
     else:
-        combined_similarity = (
-            0.6 * max_word_embeddings_similarity +
-            0.1 * max_tokenization_ratio +
-            0.3 * pos_tag_similarity
-        )
+        # Process documents for similarity calculations
+        expected_doc = nlp(expected_answer_str_preprocessed)
+        user_doc = nlp(user_answer_preprocessed)
+
+        # Calculate word embeddings similarity
+        word_embeddings_similarity = user_doc.similarity(expected_doc)
+
+        # Calculate tokenization ratios
+        tokenization_ratios = [
+            fuzz.token_sort_ratio(user_answer_preprocessed, preprocess_answer(expected_token)) / 100.0
+            for expected_token in expected_answer
+        ]
         
-    result = "Correct" if combined_similarity >= 0.6 else "Incorrect"
-    
+        # Calculate POS tag similarity
+        pos_tag_similarity = calculate_pos_similarity(user_doc, expected_doc)
+
+        # Ensure non-empty tokenization_ratios list
+        max_tokenization_ratio = max(tokenization_ratios) if tokenization_ratios else 0.0
+
+        # Determine combined similarity
+        combined_similarity = (
+            0.6 * word_embeddings_similarity +
+            0.2 * max_tokenization_ratio +
+            0.2 * pos_tag_similarity
+        )
+
+        # Determine result based on combined similarity
+        result = "Correct" if combined_similarity >= 0.6 else "Incorrect"
+
+    # Store the results
     comparison_results[key] = {
         "user_answer": user_answer,
-        "expected_answer": ', '.join(expected_answer),
+        "expected_answer": expected_answer_str,
         "result": result,
         "combined_similarity": combined_similarity
     }
-
 
 def calculate_inferential_similarity(user_answer, expected_answer, comparison_results, key):
     expected_doc = nlp(preprocess_answer(','.join(expected_answer)))
@@ -2488,47 +2525,54 @@ def analyze_similarity(request):
             # Load the trained RandomForestClassifier models
             with open(r'C:\Users\Sarah Pantaliano\Downloads\SPARKLi-main\SPARKLi-main\models\rf_classifier.pkl', 'rb') as f:
                 rf_classifier = pickle.load(f)
-
             with open(r'C:\Users\Sarah Pantaliano\Downloads\SPARKLi-main\SPARKLi-main\models\rf_literal_feedback.pkl', 'rb') as f:
                 rf_literal_feedback = pickle.load(f)
-
             with open(r'C:\Users\Sarah Pantaliano\Downloads\SPARKLi-main\SPARKLi-main\models\rf_inferential_feedback.pkl', 'rb') as f:
                 rf_inferential_feedback = pickle.load(f)
-
             with open(r'C:\Users\Sarah Pantaliano\Downloads\SPARKLi-main\SPARKLi-main\models\rf_applied_feedback.pkl', 'rb') as f:
                 rf_applied_feedback = pickle.load(f)
-
             with open(r'C:\Users\Sarah Pantaliano\Downloads\SPARKLi-main\SPARKLi-main\models\rf_level_feedback.pkl', 'rb') as f:
                 rf_level_feedback = pickle.load(f)
 
+            print("Models loaded successfully")
+
         except FileNotFoundError as e:
+            print(f"File not found: {e}")
             return JsonResponse({"error": f"File not found: {e}"}, status=500)
         except Exception as e:
+            print(f"An error occurred: {e}")
             return JsonResponse({"error": f"An error occurred: {e}"}, status=500)
 
         user_answers = {
-            f"answ{i+1}": request.POST.get(f"answ{i+1}", "").strip()
-            for i in range(7)
+            f"answ{i+1}": request.POST.get(f"answ{i+1}", "").strip().lower()
+            for i in range(7)  # Adjusted to consider only 5 answers
         }
-        user_answers["grade_level"] = request.POST.get("grade_level", "")
+        user_answers["grade_level"] = request.POST.get("grade_level", "").strip()
+
+        print("User answers:", user_answers)
 
         grade_level = user_answers["grade_level"]
-        #pretest_answers, posttest_answers = GRADE_ANSWERS.get(grade_level, ({}, {}))
-        posttest_answers = GRADE_ANSWERS.get(grade_level, ({}))
-        pretest_answers = GRADE_ANSWERS.get(grade_level, ({}))
+        pretest_answers = GRADE_ANSWERS.get(grade_level, {})
+        posttest_answers = GRADE_ANSWERS.get(grade_level, {})
 
-        pretest_questions = list(PreTestQuestions.objects.filter(pretest_grade_level=grade_level))
+        # Filter pretest and posttest questions
+        pretest_questions = PreTestQuestions.objects.filter(pretest_grade_level=grade_level)
+        posttest_questions = PostTestQuestions.objects.filter(posttest_grade_level=grade_level)
+
+        # Generate expected answers based on the number of user answers
         pretest_expected_answers = {
             f"answ{index+1}": pretest_answers.get(f"answ{index+1}", [])
             for index, _ in enumerate(pretest_questions)
+            if f"answ{index+1}" in user_answers  # Include only if user answer is present
         }
 
-        posttest_questions = list(PostTestQuestions.objects.filter(posttest_grade_level=grade_level))
         posttest_expected_answers = {
             f"answ{index+1+len(pretest_questions)}": posttest_answers.get(f"answ{index+1+len(pretest_questions)}", [])
-            for index, _ in enumerate(posttest_questions)   
+            for index, _ in enumerate(posttest_questions)
+            if f"answ{index+1+len(pretest_questions)}" in user_answers  # Include only if user answer is present
         }
 
+        # Combine expected answers
         expected_answers = {**pretest_expected_answers, **posttest_expected_answers}
         comparison_results = {}
 
@@ -2553,24 +2597,44 @@ def analyze_similarity(request):
                 }
                 continue
 
-            similarity = max(
-                fuzz.ratio(user_answer, ans.lower())
-                for ans in expected_answer
-            )
+            # Apply the similarity calculation based on grade level and key
+            if grade_level in ["22", "2", "33", "3"]:
+                if key in ["answ1", "answ2", "answ3"]:
+                    calculate_literal_similarity(user_answer, expected_answer, comparison_results, key)
+                elif key == "answ4":
+                    calculate_inferential_similarity(user_answer, expected_answer, comparison_results, key)
+                elif key == "answ5":
+                    calculate_applied_similarity(user_answer, expected_answer, comparison_results, key)
+            elif grade_level in ["4", "44"]:
+                if key in ["answ1", "answ2", "answ3"]:
+                    calculate_literal_similarity(user_answer, expected_answer, comparison_results, key)
+                elif key in ["answ4", "answ5"]:
+                    calculate_inferential_similarity(user_answer, expected_answer, comparison_results, key)
+                elif key in ["answ6", "answ7"]:
+                    calculate_applied_similarity(user_answer, expected_answer, comparison_results, key)
 
-            result = "Correct" if similarity > 80 else "Incorrect"  # Adjust threshold as needed
+            print(f"Key: {key}")
+            print("User Answer:", comparison_results[key]["user_answer"])
+            print("Expected Answer:", comparison_results[key]["expected_answer"])
+            print("Result:", comparison_results[key]["result"])
+            print("Combined Similarity:", comparison_results[key]["combined_similarity"])
+            print("------------------------------------------")
 
-            comparison_results[key] = {
-                "user_answer": user_answer,
-                "expected_answer": ', '.join(expected_answer),
-                "result": result,
-                "combined_similarity": similarity / 100.0
-            }
+        print("Comparison results:", comparison_results)
 
         total_correct_answers = sum(1 for result in comparison_results.values() if result['result'] == 'Correct')
 
         (overall_scores, literal_scores, inferential_scores, applied_scores,
          overall_percentage, literal_percentage, inferential_percentage, applied_percentage) = calculate_total_score(comparison_results, grade_level)
+
+        print("Overall scores:", overall_scores)
+        print("Literal scores:", literal_scores)
+        print("Inferential scores:", inferential_scores)
+        print("Applied scores:", applied_scores)
+        print("Overall percentage:", overall_percentage)
+        print("Literal percentage:", literal_percentage)
+        print("Inferential percentage:", inferential_percentage)
+        print("Applied percentage:", applied_percentage)
 
         feedback_input = pd.DataFrame([{
             "LiteralScore": literal_percentage,
@@ -2584,6 +2648,12 @@ def analyze_similarity(request):
         predicted_inferential_feedback = rf_inferential_feedback.predict(feedback_input)[0]
         predicted_applied_feedback = rf_applied_feedback.predict(feedback_input)[0]
         predicted_level_feedback = rf_level_feedback.predict(feedback_input)[0]
+
+        print("Predicted comprehension level:", predicted_comprehension_level)
+        print("Predicted literal feedback:", predicted_literal_feedback)
+        print("Predicted inferential feedback:", predicted_inferential_feedback)
+        print("Predicted applied feedback:", predicted_applied_feedback)
+        print("Predicted level feedback:", predicted_level_feedback)
 
         return JsonResponse({
             "results": comparison_results,
@@ -2613,8 +2683,8 @@ def analyze_similarity(request):
             },
             "predicted_comprehension_level": predicted_comprehension_level
         })
-
-    return JsonResponse({"error": "Invalid request method"}, status=405)
+    else:
+        return JsonResponse({"error": "Invalid request method"}, status=405)
 
 def calculate_total_score(comparison_results, grade_level):
     category_scores = {
@@ -2691,30 +2761,6 @@ def calculate_pos_similarity(doc1, doc2):
     jaccard_similarity = len(common_pos_tags) / (len(pos_tags1.union(pos_tags2)) or 1)
 
     return jaccard_similarity
-
-def wer(reference, hypothesis):
-    ref_words = reference.split()
-    hyp_words = hypothesis.split()
-
-    d = np.zeros((len(ref_words) + 1, len(hyp_words) + 1), dtype=np.uint8)
-    for i in range(len(ref_words) + 1):
-        for j in range(len(hyp_words) + 1):
-            if i == 0:
-                d[i][j] = j
-            elif j == 0:
-                d[i][j] = i
-
-    for i in range(1, len(ref_words) + 1):
-        for j in range(1, len(hyp_words) + 1):
-            if ref_words[i - 1] == hyp_words[j - 1]:
-                d[i][j] = d[i - 1][j - 1]
-            else:
-                substitution = d[i - 1][j - 1] + 1
-                insertion = d[i][j - 1] + 1
-                deletion = d[i - 1][j] + 1
-                d[i][j] = min(substitution, insertion, deletion)
-
-    return d[len(ref_words)][len(hyp_words)] / len(ref_words)
 
 
 from django.views.decorators.http import require_POST

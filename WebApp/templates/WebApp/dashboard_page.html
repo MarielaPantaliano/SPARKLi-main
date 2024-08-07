@@ -21,7 +21,23 @@
     </style>
     
 </head>
-<body> 
+<body>
+    {% if user.is_authenticated %}
+    <script>
+        (function(window, location) {
+            history.replaceState(null, document.title, location.pathname+"#!/stealth");
+            history.pushState(null, document.title, location.pathname);
+
+            window.addEventListener("popstate", function() {
+                if(location.hash === "#!/stealth") {
+                    history.replaceState(null, document.title, location.pathname);
+                    setTimeout(function(){
+                        location.replace("{% url 'dashboard_view' %}");
+                    }, 0);
+                }
+            }, false);
+        }(window, location));
+    </script>
     <div class="background-dashboard">
      <img src="{% static 'images/background-db-overall.png' %}" height="100%" width="100%">
 
@@ -304,7 +320,12 @@ function getCSRFToken() {
                 </script>
                 
         </div>
-    </div>  
+    </div> 
+    {% else %}
+        <script>
+            window.location.href = "{% url 'login_page' %}";
+        </script>
+    {% endif %} 
 </div>
 </body>
 </html>

@@ -76,8 +76,9 @@
 
         <button class="next-btn-str6" onclick="Next()">Proceed to Questions...</button>
         <script>
-            function Next() {
-                window.location.href = 'g4_postoral_questions.html';
+            function Next(){
+                const student_id = document.getElementById('student_id').value;
+                window.location.href = `g4_postoral_questions.html?student_id=${student_id}`;
             }
         </script>
     
@@ -159,6 +160,17 @@
                 var text = textContainer.innerText;
                 textContainer.innerHTML = text;
             }
+            document.addEventListener("DOMContentLoaded", function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const studentId = urlParams.get('student_id');
+                if (studentId) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.id = 'student_id';
+                    input.value = studentId;
+                    document.body.appendChild(input);
+                }
+            });
         </script>
     </div>
 </body>

@@ -45,46 +45,39 @@ def analyze_reading_mistakes(reference_text, transcript, ignored_words=[]):
     processed_reference = preprocess_text(reference_text)
     processed_transcript = preprocess_text(transcript)
 
-
     reference_words = nltk.word_tokenize(processed_reference)
     student_words = nltk.word_tokenize(processed_transcript)
-
 
     mispronunciation = 0
     omission = 0
     substitution = 0
     insertion = 0
 
-
     mispronunciation_threshold = 70
-
 
     mispronunciation_words = []
     omission_words = []
     substitution_words = []
     insertion_words = []
 
-
     ref_index = 0
     stu_index = 0
-
 
     while ref_index < len(reference_words) or stu_index < len(student_words):
         if ref_index < len(reference_words):
             ref_word = reference_words[ref_index]
         else:
             ref_word = None
-       
+
         if stu_index < len(student_words):
             stu_word = student_words[stu_index]
         else:
             stu_word = None
-       
+
         if ref_word == stu_word:
             ref_index += 1
             stu_index += 1
             continue
-
 
         if ref_word is None:
             insertion += 1
@@ -92,13 +85,11 @@ def analyze_reading_mistakes(reference_text, transcript, ignored_words=[]):
             stu_index += 1
             continue
 
-
         if stu_word is None:
             omission += 1
             omission_words.append(ref_word)
             ref_index += 1
             continue
-
 
         if stu_index + 1 < len(student_words) and student_words[stu_index + 1] == ref_word:
             insertion += 1
@@ -106,29 +97,24 @@ def analyze_reading_mistakes(reference_text, transcript, ignored_words=[]):
             stu_index += 1
             continue
 
-
         if ref_index + 1 < len(reference_words) and reference_words[ref_index + 1] == stu_word:
             omission += 1
             omission_words.append(ref_word)
             ref_index += 1
             continue
 
-
         if stu_word in ignored_words:
             stu_index += 1
             continue
-       
-        distance = edit_distance(ref_word, stu_word)
 
+        distance = edit_distance(ref_word, stu_word)
 
         if distance == 0:
             ref_index += 1
             stu_index += 1
             continue
 
-
         ratio = fuzz.ratio(ref_word, stu_word)
-
 
         if distance == 1 or distance == 2:
             if ratio >= mispronunciation_threshold:
@@ -141,26 +127,23 @@ def analyze_reading_mistakes(reference_text, transcript, ignored_words=[]):
             stu_index += 1
             continue
 
-
         if ratio >= mispronunciation_threshold:
             mispronunciation += 1
             mispronunciation_words.append((ref_word, stu_word))
         else:
             substitution += 1
             substitution_words.append((ref_word, stu_word))
-       
+
         ref_index += 1
         stu_index += 1
 
-
     total_miscues = mispronunciation + omission + substitution + insertion
-
 
     if len(reference_words) > 0:
         oral_reading_score = (len(reference_words) - total_miscues) / len(reference_words) * 100
+        oral_reading_score = round(oral_reading_score, 2)  # Limit to 2 decimal places
     else:
         oral_reading_score = 0
-
 
     if oral_reading_score <= 89:
         reading_level = "Frustration"
@@ -168,7 +151,6 @@ def analyze_reading_mistakes(reference_text, transcript, ignored_words=[]):
         reading_level = "Instructional"
     else:
         reading_level = "Independent"
-
 
     result = {
         "Mispronunciation": mispronunciation,
@@ -180,7 +162,6 @@ def analyze_reading_mistakes(reference_text, transcript, ignored_words=[]):
         "Reading Level": reading_level
     }
 
-
     if mispronunciation_words:
         result["Mispronunciation Words"] = mispronunciation_words
     if omission_words:
@@ -190,17 +171,30 @@ def analyze_reading_mistakes(reference_text, transcript, ignored_words=[]):
     if insertion_words:
         result["Insertion Words"] = insertion_words
 
-
     return result
+
+
+
 
 
 def wer(reference_text, transcript):
     ref_words = nltk.word_tokenize(preprocess_text(reference_text))
     hyp_words = nltk.word_tokenize(preprocess_text(transcript))
 
+    # Print the total number of reference and hypothesis words
+    print(f"Total number of reference words: {len(ref_words)}")
+    print(f"Total number of hypothesis words: {len(hyp_words)}")
 
     # Calculate Word Error Rate
-    return float(edit_distance(ref_words, hyp_words)) / len(ref_words)
+    if len(ref_words) == 0:
+        return 0.0  # Avoid division by zero if reference text is empty
+
+    error_distance = edit_distance(ref_words, hyp_words)
+    wer_percentage = (error_distance / len(ref_words)) * 100
+
+    # Round to 2 decimal places
+    return round(wer_percentage, 2)
+
 
 
 def handle_ignore_click(reference_text, transcript, ignore_word):

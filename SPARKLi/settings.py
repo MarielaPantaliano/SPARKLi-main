@@ -10,9 +10,9 @@ if not os.path.exists(LOGS_DIR):
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-wj50k@jh-gl4(g=bzej-nhzn1s4!)%_-c9pw4*9ia@8irg(zs$')
 
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = 'False'
 
-ALLOWED_HOSTS = ['sparkli-main.onrender.com']
+ALLOWED_HOSTS = ['sparkli-main.onrender.com', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',

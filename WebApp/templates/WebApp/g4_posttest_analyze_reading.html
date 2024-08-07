@@ -35,6 +35,9 @@
     <div class="g2-container">
         <div class="card3">
             <p class="transcript"><strong>Reading Transcription:</strong> {{ transcript }}</p>
+            <p class="transcript" style="padding-top: 250px;" id="start-time"></p>
+                <p class="transcript" style="padding-top: 270px;" id="end-time"></p>
+                <p class="transcript" style="padding-top: 290px;" id="duration"></p>
             <p class="speed"><strong> Reading Speed (WPM): </strong> {{ reading_speed }} words per minute</p>
         </div>
     </div>
@@ -212,7 +215,7 @@
         </header>
     </div>
 
-    <<div id="custom-popup" class="analyze-alert-msg" style="display: none;">
+    <div id="custom-popup" class="analyze-alert-msg" style="display: none;">
         <div class="analyze-alert-container">
             <p id="custom-popup-message"></p>
             <button onclick="saveData()" id="done-btn" class="analyze-done-btn">Done</button>
@@ -398,8 +401,38 @@ console.log('Student ID from session storage:', studentIdFromSessionStorage);
             alert('An error occurred while saving data.');
         }
     });
+    
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    // Replace these with the actual values from the server
+    const startTimeStr = "{{ start_time_str }}"; // ISO 8601 format string
+    const endTimeStr = "{{ end_time_str }}"; // ISO 8601 format string
+
+
+    function convertTimeToSeconds(isoStart, isoEnd) {
+        const startTime = (new Date(isoStart).getTime() / 1000).toFixed(2);
+        const endTime = (new Date(isoEnd).getTime() / 1000).toFixed(2);
+        const duration = (endTime - startTime).toFixed(2);
+        return {
+            startTime: parseFloat(startTime).toFixed(2),
+            endTime: parseFloat(endTime).toFixed(2),
+            duration: parseFloat(duration).toFixed(2)
+        };
+    }
+
+
+    if (startTimeStr && endTimeStr) {
+        const times = convertTimeToSeconds(startTimeStr, endTimeStr);
+
+
+        document.getElementById('start-time').textContent = `Start Time: ${times.startTime} secs`;
+        document.getElementById('end-time').textContent = `End Time: ${times.endTime} secs`;
+        document.getElementById('duration').textContent = `Duration: ${times.duration} secs`;
+    } else {
+        console.error('Start time or end time is missing.');
+    }
+});
 
 </script>
 </body>
