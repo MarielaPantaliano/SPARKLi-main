@@ -9,7 +9,7 @@ LOGS_DIR = os.path.join(BASE_DIR, 'logs')
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-wj50k@jh-gl4(g=bzej-nhzn1s4!)%_-c9pw4*9ia@8irg(zs$')
 
-DEBUG = 'True'
+DEBUG = False
 
 ALLOWED_HOSTS = ['sparkli-main.onrender.com', 'localhost', '127.0.0.1']
 
@@ -128,7 +128,7 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(LOGS_DIR, 'teacher_records.log'),
-            'maxBytes': 10485760, 
+            'maxBytes': 10485760,  # 10 MB
             'backupCount': 5,  
         },
     },
