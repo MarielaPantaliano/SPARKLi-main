@@ -9,7 +9,7 @@ LOGS_DIR = os.path.join(BASE_DIR, 'logs')
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-wj50k@jh-gl4(g=bzej-nhzn1s4!)%_-c9pw4*9ia@8irg(zs$')
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['sparkli-main.onrender.com', 'localhost', '127.0.0.1']
 
