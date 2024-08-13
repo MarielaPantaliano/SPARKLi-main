@@ -20365,7 +20365,7 @@ Traceback (most recent call last):
            ^^^^^^^^^^^^^^^^^^^^^
   File "C:\Users\Sarah Pantaliano\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\db\models\fields\__init__.py", line 1491, in to_python
     raise exceptions.ValidationError(
-django.core.exceptions.ValidationError: ['“275760-05-31” value has an invalid date format. It must be in YYYY-MM-DD format.']
+django.core.exceptions.ValidationError: ['ï¿½275760-05-31ï¿½ value has an invalid date format. It must be in YYYY-MM-DD format.']
 Not Found: /g1_pretest_oral.html
 Not Found: /g4_preoral_questions.html
 Not Found: /g4_preoral_questions.html

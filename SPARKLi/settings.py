@@ -5,12 +5,10 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 LOGS_DIR = os.path.join(BASE_DIR, 'logs')
-if not os.path.exists(LOGS_DIR):
-    os.makedirs(LOGS_DIR)
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-wj50k@jh-gl4(g=bzej-nhzn1s4!)%_-c9pw4*9ia@8irg(zs$')
 
-DEBUG = 'False'
+DEBUG = 'True'
 
 ALLOWED_HOSTS = ['sparkli-main.onrender.com', 'localhost', '127.0.0.1']
 
@@ -72,9 +70,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.getenv('DB_NAME', 'sparkli'),
-        'USER': os.getenv('DB_USER', 'root'),
-        'PASSWORD': os.getenv('DB_PASSWORD', ''),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'USER': os.getenv('DB_USER', 'sparkli'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'Sparkli123!'),
+        'HOST': os.getenv('DB_HOST', 'sparkli.cxs0kuquia7q.us-east-1.rds.amazonaws.com'),
         'PORT': os.getenv('DB_PORT', '3306'),
     }
 }
