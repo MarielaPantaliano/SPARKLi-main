@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import logging.handlers
 import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -125,8 +126,10 @@ LOGGING = {
     'handlers': {
         'file': {
             'level': 'DEBUG',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(LOGS_DIR, 'teacher_records.log'),
+            'maxBytes': 10485760, 
+            'backupCount': 5,  
         },
     },
     'loggers': {
