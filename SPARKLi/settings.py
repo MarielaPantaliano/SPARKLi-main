@@ -70,7 +70,7 @@ TEMPLATES = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME', 'sparkli'),
+        'NAME': 'sparkli',
         'USER': os.getenv('DB_USER', 'sparkli'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'Sparkli123!'),
         'HOST': os.getenv('DB_HOST', 'sparkli.cxs0kuquia7q.us-east-1.rds.amazonaws.com'),
@@ -126,10 +126,8 @@ LOGGING = {
     'handlers': {
         'file': {
             'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
+            'class': 'logging.FileHandler',
             'filename': os.path.join(LOGS_DIR, 'teacher_records.log'),
-            'maxBytes': 10485760,  # 10 MB
-            'backupCount': 5,  
         },
     },
     'loggers': {

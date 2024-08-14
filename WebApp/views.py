@@ -626,7 +626,6 @@ def g2_pretest_oral(request):
         )
         questions_map[question_text] = question
 
-    # Adding default answers based on the grade
     GRADE2_PRE_ANSWERS = {
         "What liquids are good for our health?": ["Milk, juice and water", "milk and water", "milk", "juice and water", "juice", "water"],
         "What can milk do to us?": ["milk makes our bone strong.", "milk strengthens bones.", "milk provides essential nutrients.", "milk provides essential nutrients.",
@@ -681,8 +680,6 @@ def g2_preoral_questions(request):
     
     return render(request, "WebApp/g2_preoral_questions.html", context)
 
-
-
 @login_required
 def g2_pretest_summary(request):
     teacher = request.user
@@ -691,8 +688,6 @@ def g2_pretest_summary(request):
         'questions': questions
     }
     return render(request, "WebApp/g2_pretest_summary.html", context)
-
-
 
 def g2_pretest_overall(request):
     student_id = request.GET.get('student')
@@ -706,7 +701,6 @@ def g2_pretest_overall(request):
 
     student = get_object_or_404(Studentrecords, id=student_id)
     
-    # Prepare context for the template
     context = {
         'student': student,
         'student_id': student_id,
@@ -2522,7 +2516,6 @@ GRADE_ANSWERS = {
 def analyze_similarity(request):
     if request.method == "POST":
         try:
-            # Load the trained RandomForestClassifier models
             with open(r'C:\Users\Sarah Pantaliano\Downloads\SPARKLi-main\SPARKLi-main\models\rf_classifier.pkl', 'rb') as f:
                 rf_classifier = pickle.load(f)
             with open(r'C:\Users\Sarah Pantaliano\Downloads\SPARKLi-main\SPARKLi-main\models\rf_literal_feedback.pkl', 'rb') as f:
