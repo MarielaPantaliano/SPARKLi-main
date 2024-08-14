@@ -2511,20 +2511,24 @@ GRADE_ANSWERS = {
     "44": (GRADE4_POST_ANSWERS)
 }
 
+import os
 
 @csrf_exempt
 def analyze_similarity(request):
     if request.method == "POST":
         try:
-            with open(r'C:\Users\Sarah Pantaliano\Downloads\SPARKLi-main\SPARKLi-main\models\rf_classifier.pkl', 'rb') as f:
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            model_dir = os.path.join(base_dir, 'models')
+
+            with open(os.path.join(model_dir, 'rf_classifier.pkl'), 'rb') as f:
                 rf_classifier = pickle.load(f)
-            with open(r'C:\Users\Sarah Pantaliano\Downloads\SPARKLi-main\SPARKLi-main\models\rf_literal_feedback.pkl', 'rb') as f:
+            with open(os.path.join(model_dir, 'rf_literal_feedback.pkl'), 'rb') as f:
                 rf_literal_feedback = pickle.load(f)
-            with open(r'C:\Users\Sarah Pantaliano\Downloads\SPARKLi-main\SPARKLi-main\models\rf_inferential_feedback.pkl', 'rb') as f:
+            with open(os.path.join(model_dir, 'rf_inferential_feedback.pkl'), 'rb') as f:
                 rf_inferential_feedback = pickle.load(f)
-            with open(r'C:\Users\Sarah Pantaliano\Downloads\SPARKLi-main\SPARKLi-main\models\rf_applied_feedback.pkl', 'rb') as f:
+            with open(os.path.join(model_dir, 'rf_applied_feedback.pkl'), 'rb') as f:
                 rf_applied_feedback = pickle.load(f)
-            with open(r'C:\Users\Sarah Pantaliano\Downloads\SPARKLi-main\SPARKLi-main\models\rf_level_feedback.pkl', 'rb') as f:
+            with open(os.path.join(model_dir, 'rf_level_feedback.pkl'), 'rb') as f:
                 rf_level_feedback = pickle.load(f)
 
             print("Models loaded successfully")
