@@ -14,7 +14,7 @@ import spacy
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from fuzzywuzzy import fuzz
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 import numpy as np
@@ -31,7 +31,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .forms import ContentForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm as BasePasswordChangeForm
-from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.contrib import messages
 from django.conf import settings
@@ -49,6 +48,7 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from .default_answers import GRADE2_POST_ANSWERS, GRADE3_POST_ANSWERS, GRADE4_POST_ANSWERS, GRADE2_PRE_ANSWERS, GRADE3_PRE_ANSWERS, GRADE4_PRE_ANSWERS
 from django.utils import timezone
+from datetime import datetime
 
 
 logger = logging.getLogger(__name__)
@@ -90,6 +90,7 @@ def index(request):
 
 
 MAX_LOGIN_ATTEMPTS = 3
+SESSION_TIMEOUT_MINUTES = 30
 logger = logging.getLogger(__name__)
 
 def login_page(request):
@@ -130,6 +131,11 @@ def login_page(request):
                 # Fetch associated student records
                 students = Studentrecords.objects.filter(teacher_id=teacherrecords.id)
 
+                # Reset login attempts on successful login
+                request.session['login_attempts'] = 0
+
+                # Set last activity time
+                request.session['last_activity'] = timezone.now()
 
                 return render(request, "WebApp/dashboard_page.html", {"teacher": teacherrecords, "students": students})
             else:
