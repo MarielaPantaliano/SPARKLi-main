@@ -135,7 +135,7 @@ def login_page(request):
                 request.session['login_attempts'] = 0
 
                 # Set last activity time
-                request.session['last_activity'] = timezone.now()
+                request.session['last_activity'] = timezone.now().isoformat()
 
                 return render(request, "WebApp/dashboard_page.html", {"teacher": teacherrecords, "students": students})
             else:
